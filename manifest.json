@@ -177,7 +177,10 @@
         },
         "windows-x64": {
           "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-x64-win.zip",
-          "sha256": "d13b7bbedaab72b7575f32c7f2f6120e14949f2dfb89366d4618fd8170f6a493"
+          "sha256": "d13b7bbedaab72b7575f32c7f2f6120e14949f2dfb89366d4618fd8170f6a493",
+          "exclude": [
+            "scripts/target/?1879x?1?.cfg"
+          ]
         }
       }
     },

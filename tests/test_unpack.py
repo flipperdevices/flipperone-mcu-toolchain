@@ -113,3 +113,11 @@ def test_select_root(tmp_path):
         unpack.select_root(flat, 'missing')
     with pytest.raises(unpack.UnsafeArchive):
         unpack.select_root(flat, '../flat')
+
+
+@pytest.mark.parametrize('suffix', ['tar.gz', 'zip'])
+def test_exclude_skips_matching_members(tmp_path, suffix):
+    entries = [('scripts/target/rp2350.cfg', 'file', b'x'), ('scripts/target/?1879x?1?.cfg', 'file', b'y')]
+    archive = (tar_with if suffix == 'tar.gz' else zip_with)(tmp_path / f'a.{suffix}', entries)
+    unpack.extract(archive, tmp_path / 'out', exclude=('scripts/target/?1879x?1?.cfg',))
+    assert [p.name for p in (tmp_path / 'out' / 'scripts' / 'target').iterdir()] == ['rp2350.cfg']

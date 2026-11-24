@@ -34,6 +34,7 @@ class Asset:
     url: str
     sha256: str
     root: str | None = None  # path inside the archive to install; None = auto-detect
+    exclude: tuple[str, ...] = ()  # archive members to skip (fnmatch patterns)
 
     @property
     def filename(self) -> str:
@@ -56,7 +57,7 @@ class Component:
         if spec is None:
             raise ManifestError(f'{self.name}: no asset for {platform.name}')
         root = spec.get('root', self.raw.get('root'))
-        return Asset(url=spec['url'], sha256=spec['sha256'], root=root)
+        return Asset(url=spec['url'], sha256=spec['sha256'], root=root, exclude=tuple(spec.get('exclude', ())))
 
     def exe(self, platform: Platform) -> str | None:
         """Main executable, relative to the bundle root."""
@@ -151,6 +152,9 @@ def validate(data: dict) -> list[str]:
                     errors.append(f'{where}/{key}: url must be https')
                 if not SHA256_RE.fullmatch(str(spec.get('sha256', ''))):
                     errors.append(f'{where}/{key}: sha256 missing or malformed')
+                exclude = spec.get('exclude', [])
+                if not isinstance(exclude, list) or not all(isinstance(e, str) and e for e in exclude):
+                    errors.append(f'{where}/{key}: exclude must be a list of patterns')
                 root = spec.get('root', c.get('root'))
                 if root not in (None, '') and not _rel_path_ok(root):
                     errors.append(f'{where}/{key}: root must be a relative posix path')

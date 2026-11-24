@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import fnmatch
 import os
 import posixpath
 import stat
@@ -23,9 +24,15 @@ def _check_member(name: str) -> PurePosixPath:
     return path
 
 
-def _extract_zip(archive: Path, dest: Path) -> None:
+def _excluded(name: str, exclude: tuple[str, ...]) -> bool:
+    return any(fnmatch.fnmatchcase(name.rstrip('/'), pattern) for pattern in exclude)
+
+
+def _extract_zip(archive: Path, dest: Path, exclude: tuple[str, ...]) -> None:
     with zipfile.ZipFile(archive) as zf:
         for info in zf.infolist():
+            if _excluded(info.filename, exclude):
+                continue
             rel = _check_member(info.filename.rstrip('/') or '.')
             target = dest.joinpath(*rel.parts)
             mode = info.external_attr >> 16
@@ -47,18 +54,20 @@ def _extract_zip(archive: Path, dest: Path) -> None:
                 target.chmod(0o755)
 
 
-def extract(archive: Path, dest: Path) -> None:
-    """Unpack `archive` into the (new or empty) directory `dest`."""
+def extract(archive: Path, dest: Path, exclude: tuple[str, ...] = ()) -> None:
+    """Unpack `archive` into the (new or empty) directory `dest`, skipping members whose
+    archive path matches an `exclude` pattern (fnmatch)."""
     dest.mkdir(parents=True, exist_ok=True)
     if any(dest.iterdir()):
         raise FileExistsError(f'{dest} is not empty')
     name = archive.name
     if name.endswith(('.zip', '.whl')):
-        _extract_zip(archive, dest)
+        _extract_zip(archive, dest, exclude)
     elif name.endswith(('.tar.gz', '.tgz', '.tar.xz', '.tar.bz2', '.tar')):
         with tarfile.open(archive) as tf:
             # The "data" filter rejects absolute paths, "..", links leaving dest and device files.
-            tf.extractall(dest, filter='data')
+            members = [m for m in tf.getmembers() if not _excluded(m.name, exclude)]
+            tf.extractall(dest, members=members, filter='data')
     else:
         raise ValueError(f'unsupported archive type: {name}')
 

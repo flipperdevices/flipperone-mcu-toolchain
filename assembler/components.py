@@ -84,7 +84,7 @@ def install_archive(c: Component, platform: Platform, bundle: Path, cache: Path,
     target.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=bundle.parent, prefix='.unpack-') as tmp:
         tree = Path(tmp) / 'tree'
-        extract(archive, tree)
+        extract(archive, tree, asset.exclude)
         copy_licenses(tree, c.license_files, bundle / 'licenses' / c.name)
         if c.raw.get('restamp_pyc'):
             print(f'  re-stamped {restamp_pyc_sources(tree)} sources to match their .pyc', flush=True)

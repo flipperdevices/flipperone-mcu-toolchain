@@ -53,6 +53,7 @@ def test_every_tool_has_a_version_check(data):
     (lambda d: d['components'][1].update(commit='2.3.1'), 'commit'),
     (lambda d: d.update(platforms=['linux-x86_64', 'beos-m68k']), 'platforms'),
     (lambda d: d['components'][1]['keep'].update({'lib/lwip': ['x']}), 'not a pinned submodule'),
+    (lambda d: d['components'][0]['assets']['linux-x86_64'].update(exclude='x'), 'exclude'),
     (lambda d: d['components'][1]['keep'].update({'lib/btstack': ['../x']}), 'relative paths'),
 ])
 def test_validate_rejects(data, mutate, message):
