@@ -1,0 +1,4 @@
+; Toggle one pin forever.
+.program blink
+    set pins, 1 [31]
+    set pins, 0 [31]

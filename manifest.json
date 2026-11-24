@@ -1,0 +1,472 @@
+{
+  "schema": 1,
+  "platforms": [
+    "linux-x86_64",
+    "linux-aarch64",
+    "darwin-arm64",
+    "windows-x64"
+  ],
+  "components": [
+    {
+      "name": "arm-none-eabi-gcc",
+      "kind": "archive",
+      "version": "14.2.1-1.1",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1 AND LicenseRef-newlib",
+      "homepage": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack",
+      "dest": "tools/arm-none-eabi-gcc",
+      "path": [
+        "bin"
+      ],
+      "exe": "bin/arm-none-eabi-gcc",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "14.2.1"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v14.2.1-1.1/xpack-arm-none-eabi-gcc-14.2.1-1.1-linux-x64.tar.gz",
+          "sha256": "ed8c7d207a85d00da22b90cf80ab3b0b2c7600509afadf6b7149644e9d4790a6"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v14.2.1-1.1/xpack-arm-none-eabi-gcc-14.2.1-1.1-linux-arm64.tar.gz",
+          "sha256": "a1ac95c8d9347020d61e387e644a2c1806556b77162958a494d2f5f3d5fe7053"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v14.2.1-1.1/xpack-arm-none-eabi-gcc-14.2.1-1.1-darwin-arm64.tar.gz",
+          "sha256": "f52ea3760c53b25d726a7345be60a210736293db85f92daa39d1d22d34e2c995"
+        },
+        "windows-x64": {
+          "url": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v14.2.1-1.1/xpack-arm-none-eabi-gcc-14.2.1-1.1-win32-x64.zip",
+          "sha256": "0b2d496b383ba578182eb57b3f7d35ff510e36eda56257883b902fa07c3bba55"
+        }
+      }
+    },
+    {
+      "name": "pico-sdk",
+      "kind": "git",
+      "version": "2.3.1",
+      "license": "BSD-3-Clause AND MIT AND LicenseRef-BTstack",
+      "homepage": "https://github.com/raspberrypi/pico-sdk",
+      "dest": "pico-sdk",
+      "url": "https://github.com/raspberrypi/pico-sdk.git",
+      "ref": "2.3.1",
+      "commit": "079c6f39023649b154152db30f1d781e884879bc",
+      "submodules": {
+        "lib/tinyusb": "86ad6e56c1700e85f1c5678607a762cfe3aa2f47",
+        "lib/btstack": "eb0bb8b5ea6d234ccb940313b47f7a5c3b4e20ec"
+      },
+      "keep": {
+        "lib/btstack": [
+          "LICENSE",
+          "src/bluetooth.h",
+          "platform/embedded/hal_flash_bank.h"
+        ]
+      },
+      "license_files": [
+        "LICENSE.TXT",
+        "lib/tinyusb/LICENSE",
+        "lib/btstack/LICENSE"
+      ]
+    },
+    {
+      "name": "picotool",
+      "kind": "archive",
+      "version": "2.3.1",
+      "license": "BSD-3-Clause",
+      "homepage": "https://github.com/raspberrypi/picotool",
+      "dest": "tools/picotool",
+      "root": "picotool",
+      "path": [
+        "."
+      ],
+      "exe": "picotool",
+      "check": {
+        "args": [
+          "version"
+        ],
+        "expect": "2.3.1"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-x86_64-lin.tar.gz",
+          "sha256": "878a1a1e7d8336b8be60300c7218f366d9790c0d3a211b181d6d172e80b1248e"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-aarch64-lin.tar.gz",
+          "sha256": "8cce5579c92e77c0439f34d4f49d37b1dc7d1e7c455233398f2e7b49599f67aa"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-mac.zip",
+          "sha256": "7bb3cea5d9f1b000fc758cf4b54774fda5c16a9899d342ef6b0c30138988793b"
+        },
+        "windows-x64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-x64-win.zip",
+          "sha256": "68730be0813f8f35be2cca147cf7f1572662d5dcf0f5ba468e02a6dd9e85db2b"
+        }
+      }
+    },
+    {
+      "name": "pioasm",
+      "kind": "archive",
+      "version": "2.3.1",
+      "license": "BSD-3-Clause",
+      "homepage": "https://github.com/raspberrypi/pico-sdk/tree/master/tools/pioasm",
+      "dest": "tools/pioasm",
+      "root": "pioasm",
+      "path": [
+        "."
+      ],
+      "exe": "pioasm",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "2.3.1"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/pico-sdk-tools-2.3.1-x86_64-lin.tar.gz",
+          "sha256": "39758f147a8e615f8c77586ce3c85a25c6728910a86612eea184fc86eb606992"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/pico-sdk-tools-2.3.1-aarch64-lin.tar.gz",
+          "sha256": "108a3e1d15ea8ace1a7efc8751b36d0a2b5e1d8e1cf230ee2f061e3c8f1c8276"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/pico-sdk-tools-2.3.1-mac.zip",
+          "sha256": "7d4c8966f8f47b08c7b2aaf513648f321a15753fab6e8f30bd79d1e6c921aa2f"
+        },
+        "windows-x64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/pico-sdk-tools-2.3.1-x64-win.zip",
+          "sha256": "c5d18dae371eb088da61a038ccf56a23fbd19171a319461efebeae1646c06ade"
+        }
+      }
+    },
+    {
+      "name": "openocd",
+      "kind": "archive",
+      "version": "0.12.0+dev-gacff23f",
+      "license": "GPL-2.0-or-later",
+      "homepage": "https://github.com/raspberrypi/openocd",
+      "dest": "tools/openocd",
+      "root": "",
+      "path": [
+        "."
+      ],
+      "exe": "openocd",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "0.12.0+dev"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-x86_64-lin.tar.gz",
+          "sha256": "7b2ad4bb310356c7e50c17d0a813f7f803765ea4a0610a2191909767835f3b0d"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-aarch64-lin.tar.gz",
+          "sha256": "7b2d56d74ca27485bfc5a72fd59ac6684877a41e09abddcc18475cc9291adff5"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-mac.zip",
+          "sha256": "412caeab08a4613d3fd425fc1fa3fa84aa95ff05bca008f13eacee118e05035d"
+        },
+        "windows-x64": {
+          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-x64-win.zip",
+          "sha256": "d13b7bbedaab72b7575f32c7f2f6120e14949f2dfb89366d4618fd8170f6a493"
+        }
+      }
+    },
+    {
+      "name": "cmake",
+      "kind": "archive",
+      "version": "3.31.9-1",
+      "license": "BSD-3-Clause",
+      "homepage": "https://github.com/xpack-dev-tools/cmake-xpack",
+      "dest": "tools/cmake",
+      "path": [
+        "bin"
+      ],
+      "exe": "bin/cmake",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "3.31.9"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/xpack-dev-tools/cmake-xpack/releases/download/v3.31.9-1/xpack-cmake-3.31.9-1-linux-x64.tar.gz",
+          "sha256": "76870fcbef9c618bff4d61b4b4dfffd8780aef7ea46a8478b2c81936c14106b6"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/xpack-dev-tools/cmake-xpack/releases/download/v3.31.9-1/xpack-cmake-3.31.9-1-linux-arm64.tar.gz",
+          "sha256": "23754f32bf524c4425eb5b85b995ba33360d29bfc5771aecad47b428e489efeb"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/xpack-dev-tools/cmake-xpack/releases/download/v3.31.9-1/xpack-cmake-3.31.9-1-darwin-arm64.tar.gz",
+          "sha256": "c9881cde73aeb457cfafc6baac483e90b5e152a38256ebd812e3373b4009e9fa"
+        },
+        "windows-x64": {
+          "url": "https://github.com/xpack-dev-tools/cmake-xpack/releases/download/v3.31.9-1/xpack-cmake-3.31.9-1-win32-x64.zip",
+          "sha256": "fbb9233a1a16347ca58ae874d2c148a5744b9358607fe16abb665637a05567e3"
+        }
+      }
+    },
+    {
+      "name": "ninja",
+      "kind": "archive",
+      "version": "1.13.1-1",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/xpack-dev-tools/ninja-build-xpack",
+      "dest": "tools/ninja",
+      "path": [
+        "bin"
+      ],
+      "exe": "bin/ninja",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "1.13.1"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/xpack-dev-tools/ninja-build-xpack/releases/download/v1.13.1-1/xpack-ninja-build-1.13.1-1-linux-x64.tar.gz",
+          "sha256": "e48e5ff6e3db4844670b74a7adc1270d8bc1dc661e2a36a134daa199a9b07c10"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/xpack-dev-tools/ninja-build-xpack/releases/download/v1.13.1-1/xpack-ninja-build-1.13.1-1-linux-arm64.tar.gz",
+          "sha256": "8a464d98e8845bbde0dfe04b170983bceba69cc00c3904940ab7cf3f3e7d295e"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/xpack-dev-tools/ninja-build-xpack/releases/download/v1.13.1-1/xpack-ninja-build-1.13.1-1-darwin-arm64.tar.gz",
+          "sha256": "9a84d173c87d2666a4410fdfdd99e2ef8ea349ab036b27f9c691ce8b9273cdb8"
+        },
+        "windows-x64": {
+          "url": "https://github.com/xpack-dev-tools/ninja-build-xpack/releases/download/v1.13.1-1/xpack-ninja-build-1.13.1-1-win32-x64.zip",
+          "sha256": "e14c3879dc5d6d4d69e89da5e8c9f3e7ca2c37194283631e56f6b3d90cad7af4"
+        }
+      }
+    },
+    {
+      "name": "python",
+      "kind": "archive",
+      "version": "3.12.16+20261026",
+      "license": "PSF-2.0",
+      "homepage": "https://github.com/astral-sh/python-build-standalone",
+      "dest": "tools/python",
+      "path": [
+        "bin"
+      ],
+      "path_windows": [
+        ".",
+        "Scripts"
+      ],
+      "exe": {
+        "unix": "bin/python3",
+        "windows": "python.exe"
+      },
+      "restamp_pyc": true,
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "3.12.16"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.12.16%2B20261026-x86_64-unknown-linux-gnu-install_only.tar.gz",
+          "sha256": "6a79e922e50006b601f29e688407659da1c2b86ebcd4e9c7254cf234be8b89de"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.12.16%2B20261026-aarch64-unknown-linux-gnu-install_only.tar.gz",
+          "sha256": "a945427411dc6851a1393533b74a4a1ac434321ae397f2ec69897a9b4fde032b"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.12.16%2B20261026-aarch64-apple-darwin-install_only.tar.gz",
+          "sha256": "fbf4afef53c2a6b72bb741bc06d5671a9dfaf87bd84e5aa73ac9b3d0d589f14e"
+        },
+        "windows-x64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.12.16%2B20261026-x86_64-pc-windows-msvc-install_only.tar.gz",
+          "sha256": "590dfcbe3a34c07301e6332e13e2188b98655cd072b08afa45a7998dc4c22bc5"
+        }
+      }
+    },
+    {
+      "name": "python-packages",
+      "kind": "pip",
+      "version": "requirements.lock",
+      "license": "various (see THIRD_PARTY.md)",
+      "homepage": "https://pypi.org",
+      "interpreter": "python",
+      "requirements": "python/requirements.lock",
+      "check": {
+        "args": [
+          "-c",
+          "import PIL, google.protobuf, grpc_tools.protoc; print(PIL.__version__, google.protobuf.__version__)"
+        ],
+        "expect": "12.2.0 7.35.1"
+      }
+    },
+    {
+      "name": "uv",
+      "kind": "archive",
+      "version": "0.13.7",
+      "license": "MIT OR Apache-2.0",
+      "homepage": "https://github.com/astral-sh/uv",
+      "dest": "tools/uv",
+      "path": [
+        "."
+      ],
+      "exe": "uv",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "0.13.7"
+      },
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-unknown-linux-gnu.tar.gz",
+          "sha256": "c5221ff41b7892bfc223543883600125f6a47fe845093e0f5bdff4f359196d83"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-aarch64-unknown-linux-gnu.tar.gz",
+          "sha256": "71279f8d3c67241e807b9d8db872d1bf541579fb9f08b7d1eb1682196d1e57dc"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-aarch64-apple-darwin.tar.gz",
+          "sha256": "81b811b57e4624df7ed3aac148e0359100d9962f3d9dce00aec533dc2e086731"
+        },
+        "windows-x64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-pc-windows-msvc.zip",
+          "sha256": "0cdc5b38fe5a8168ed6a25814f5ba43c21d313dd3187314fccb37b7cec46e021"
+        }
+      }
+    },
+    {
+      "name": "ccache",
+      "kind": "archive",
+      "version": "4.14.3",
+      "license": "GPL-3.0-or-later",
+      "homepage": "https://ccache.dev",
+      "dest": "tools/ccache",
+      "path": [
+        "."
+      ],
+      "exe": "ccache",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "4.14.3"
+      },
+      "license_files": [
+        "*/LICENSE.md"
+      ],
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://github.com/ccache/ccache/releases/download/v4.14.3/ccache-4.14.3-linux-x86_64-glibc.tar.gz",
+          "sha256": "9ac91421d7372565118cb421e4dc2d03f273a11ab81ab9e051fd1cb4577222d7"
+        },
+        "linux-aarch64": {
+          "url": "https://github.com/ccache/ccache/releases/download/v4.14.3/ccache-4.14.3-linux-aarch64-glibc.tar.gz",
+          "sha256": "5af4c73f9a2c2ed27c17e48cf06868202738fecf8036cfbcdd7eb679930670cb"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/ccache/ccache/releases/download/v4.14.3/ccache-4.14.3-darwin.tar.gz",
+          "sha256": "764dd2a8100ff83e6bbd7b9a1e2016cc401be34bee8a70ea99698186622c34d5"
+        },
+        "windows-x64": {
+          "url": "https://github.com/ccache/ccache/releases/download/v4.14.3/ccache-4.14.3-windows-x86_64.zip",
+          "sha256": "c845c3d65be81954c75659145a522a793a27586bf940c5dcfe18af33fa1a67dd"
+        }
+      }
+    },
+    {
+      "name": "clang-format",
+      "kind": "archive",
+      "version": "23.1.4",
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "homepage": "https://github.com/ssciwr/clang-format-wheel",
+      "dest": "tools/clang-format",
+      "root": "clang_format/data",
+      "path": [
+        "bin"
+      ],
+      "exe": "bin/clang-format",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "23.1.4"
+      },
+      "license_files": [
+        "clang_format-23.1.4.dist-info/licenses/*"
+      ],
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://files.pythonhosted.org/packages/56/93/25269be2fd50e53af60f60737906a14666c44daa64288bd0d24f33b6013e/clang_format-23.1.4-py2.py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "cef37c9b8516bacc7ce45ef7d5794c1aa7943707eb7277e7bb648f46b745d303"
+        },
+        "linux-aarch64": {
+          "url": "https://files.pythonhosted.org/packages/c6/9e/835e20bed9fef947d70129ac33d8a8ce2aa838bc300a9aa8d2fbe64e7b3a/clang_format-23.1.4-py2.py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
+          "sha256": "0fec4dcb7de29469d29deef39f4818a88ea230d6019870927e9235ce8f7b06bb"
+        },
+        "darwin-arm64": {
+          "url": "https://files.pythonhosted.org/packages/e6/72/2839b6bb6fe39a79a06613e4f4bf88fe7c82d52db7e77bfbed9f4d755325/clang_format-23.1.4-py2.py3-none-macosx_11_0_arm64.whl",
+          "sha256": "67fac45d8b5cfecf60bb25d83e479ad110efdbd7e8fda41042a808053ca20481"
+        },
+        "windows-x64": {
+          "url": "https://files.pythonhosted.org/packages/82/c2/a32b7ed0d037d3fc497f494808d3926f050fa3c7145a2205ee51086d5c90/clang_format-23.1.4-py2.py3-none-win_amd64.whl",
+          "sha256": "bd372a6c247c22b5d7a5a748aa66b88476aec946bd8e644f8a68b990c90714a8"
+        }
+      }
+    },
+    {
+      "name": "clang-tidy",
+      "kind": "archive",
+      "version": "23.1.4",
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "homepage": "https://github.com/ssciwr/clang-tidy-wheel",
+      "dest": "tools/clang-tidy",
+      "root": "clang_tidy/data",
+      "path": [
+        "bin"
+      ],
+      "exe": "bin/clang-tidy",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "23.1.4"
+      },
+      "license_files": [
+        "clang_tidy-23.1.4.dist-info/licenses/*"
+      ],
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://files.pythonhosted.org/packages/80/85/9b483f300124a9245ec6da8975612f1841e26da13b27ad8d17f2006e13bd/clang_tidy-23.1.4-py2.py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "6bb31e4f319ecbe14acb75f23c3050d0f1d4b1d92ea1c66091bc76e4eac2c1ac"
+        },
+        "linux-aarch64": {
+          "url": "https://files.pythonhosted.org/packages/7d/95/ba9463f94319dddd0c3a9d3f65d432ddf71fe9b203dcd7ea63bcff8999e2/clang_tidy-23.1.4-py2.py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
+          "sha256": "87596cd77dedfdea23ced1d13e57e869dcaee99745bfe942796196da3c197671"
+        },
+        "darwin-arm64": {
+          "url": "https://files.pythonhosted.org/packages/0c/59/637ce45a6cfa15ddb926e1feeee8077b9ebeb2956548375f24e16d51a908/clang_tidy-23.1.4-py2.py3-none-macosx_11_0_arm64.whl",
+          "sha256": "08e977575e9f800c1c806f2001a3cdfd01323491aec05e86dd24be9a5c2585f4"
+        },
+        "windows-x64": {
+          "url": "https://files.pythonhosted.org/packages/c0/49/b2adbdedbe430d0cce9b354a679d57e28692ce2fb59a575486784d438125/clang_tidy-23.1.4-py2.py3-none-win_amd64.whl",
+          "sha256": "8107e05930f53dc477dbb5fb8108d7c10464176fc95d3e58f4ee7317887aed59"
+        }
+      }
+    }
+  ]
+}

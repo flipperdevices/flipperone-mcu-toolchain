@@ -1,0 +1,8 @@
+# Build-time Python dependencies of flipperone-mcu-firmware, installed into the bundled
+# interpreter. Keep these pins equal to the firmware's build requirements; a firmware
+# change to them needs a toolchain release first. Regenerate the lock with:
+#   uv pip compile python/requirements-build.in --universal --python-version 3.12 \
+#     --generate-hashes --exclude-newer <date two weeks ago> -o python/requirements.lock
+pillow==12.2.0
+protobuf==7.35.1
+grpcio-tools==1.83.0  # bundles protoc, so no system protoc is needed

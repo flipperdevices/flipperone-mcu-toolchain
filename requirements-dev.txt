@@ -1,0 +1,3 @@
+# Host tooling for this repo (tests and lint). The assembler itself is stdlib-only.
+pytest==9.2.0
+ruff==0.17.4

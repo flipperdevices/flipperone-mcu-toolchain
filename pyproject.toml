@@ -1,0 +1,20 @@
+[project]
+name = "flipperone-mcu-toolchain"
+version = "0"
+description = "Assembler for the Flipper One MCU toolchain bundle"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.ruff.format]
+quote-style = "single"
