@@ -1,7 +1,6 @@
 # Flipper One MCU toolchain
 
-Everything needed to build, flash, debug and lint the
-[Flipper One MCU firmware](https://github.com/flipperdevices/flipperone-mcu-firmware) in
+Everything needed to build, flash, debug and lint Flipper One MCU (RP2350) firmware in
 one versioned, hash-verified bundle. It ships as an archive for each platform and as a
 Docker image.
 
@@ -18,7 +17,8 @@ The bundle contains:
 - picotool and pioasm 2.3.1, prebuilt
 - OpenOCD (the Raspberry Pi fork)
 - CMake and Ninja
-- Python 3.12, with the firmware's build packages already installed
+- Python 3.12, with build packages already installed: pillow, protobuf, and grpcio-tools
+  (bundles protoc)
 - uv and ccache
 - clang-format and clang-tidy
 
@@ -53,8 +53,7 @@ The scripts put the tools first on `PATH` and set these variables:
 | `FLIPPERONE_TOOLCHAIN_ROOT` | the bundle's root directory |
 | `PICO_SDK_PATH`, `PICO_TOOLCHAIN_PATH` | the SDK and the compiler, for the SDK's CMake |
 | `picotool_DIR`, `pioasm_DIR` | the prebuilt tools, so the SDK does not build them from source |
-| `OPENOCD_SCRIPTS`, `F1_OPENOCD` | OpenOCD's scripts and binary; the firmware's `swd.py` reads `F1_OPENOCD` |
-| `ARM_TOOLCHAIN_BIN` | the compiler's `bin/`; the firmware's `isr_ram_check.py` reads it |
+| `OPENOCD_SCRIPTS` | OpenOCD's scripts directory |
 | `PYTHONNOUSERSITE` | `1`, which keeps user site-packages out of the bundled Python |
 
 Sourcing a script again, or sourcing another bundle's script, replaces the earlier
@@ -104,13 +103,14 @@ licenses/  THIRD_PARTY.md
 ```
 
 `pico-sdk/lib/btstack` holds only three files:
-- `platform/embedded/hal_flash_bank.h`, which the firmware's kvstore needs through the
-  SDK's `pico/btstack_flash_bank.h`. It is BSD-3-Clause.
+- `platform/embedded/hal_flash_bank.h`, which the SDK's `pico/btstack_flash_bank.h`
+  includes. It is BSD-3-Clause.
 - `src/bluetooth.h`, which the SDK only checks for, to define its `pico_btstack_*`
   targets at all.
 - `LICENSE`.
 
-The SDK's other BTstack targets are not usable with this bundle.
+With these, `pico_btstack_flash_bank_headers` works; the smoke project uses it. The
+SDK's other BTstack targets are not usable with this bundle.
 
 The layout, the variable names and the `toolchain.json` schema are a public contract.
 Changing any of them is a breaking change; see [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -138,14 +138,15 @@ together with a `.sha256` file.
 To test an unpacked bundle, load its env and run the smoke test:
 
 ```shell
-. dist/<bundle>/fbtenv.sh && python3 tests/smoke/run.py \
-    [--firmware ../flipperone-mcu-firmware --target f2 --target f1]
+. dist/<bundle>/fbtenv.sh && python3 tests/smoke/run.py
 ```
 
 The smoke test checks:
 - the files against `SHA256SUMS`
 - every variable and `PATH` entry
 - every tool's version
-- a small RP2350 project, built once with the env and once with only the initial cache
+- a small RP2350 project (`tests/smoke/blink`), built once with the env and once with
+  only the initial cache
 
-With `--firmware`, it also builds the firmware.
+The smoke test prints the project's `blink.uf2` hash, so builds on different platforms can
+be compared.

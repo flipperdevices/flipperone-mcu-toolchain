@@ -128,7 +128,7 @@ def install_git(c: Component, bundle: Path, cache: Path, offline: bool) -> None:
     """Shallow checkout at the pinned commit; only the pinned submodules, each verified.
 
     `keep` maps a submodule path to the only files to retain from it, for submodules the
-    firmware needs a few files of (verified when the list changes; see the manifest).
+    bundle needs only a few files of (see the manifest and README).
     """
     submodules: dict[str, str] = c.raw.get('submodules', {})
     keep: dict[str, list[str]] = c.raw.get('keep', {})
@@ -183,7 +183,7 @@ def drop_console_scripts(interpreter_root: Path, scripts: set[Path]) -> None:
 
     pip writes the interpreter's absolute path into each script's shebang (and into the
     .exe launchers on Windows), which breaks both relocation and reproducibility. The
-    firmware runs these packages as modules (python -m ...), never through the scripts.
+    packages are meant to be run as modules (python -m ...), not through the scripts.
     """
     for script in scripts:
         print(f'  drop console script {script.relative_to(interpreter_root)}', flush=True)

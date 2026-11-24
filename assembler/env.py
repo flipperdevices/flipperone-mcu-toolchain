@@ -30,9 +30,6 @@ def variables(manifest: Manifest, platform: Platform, tag: str) -> list[Var]:
         Var('picotool_DIR', manifest.component('picotool').dest, True),
         Var('pioasm_DIR', manifest.component('pioasm').dest, True),
         Var('OPENOCD_SCRIPTS', manifest.component('openocd').dest + '/scripts', True),
-        # Overrides the firmware's scripts already read (swd.py, isr_ram_check.py).
-        Var('F1_OPENOCD', manifest.component('openocd').exe(platform), True),
-        Var('ARM_TOOLCHAIN_BIN', gcc + '/bin', True),
         Var('PYTHONNOUSERSITE', '1', False),
     ]
 

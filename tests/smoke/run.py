@@ -1,12 +1,13 @@
 """Smoke-test an unpacked bundle from a shell where its fbtenv script has been sourced.
 
-    . <bundle>/fbtenv.sh && python3 tests/smoke/run.py [--firmware <src> --target f2 --target f1]
+    . <bundle>/fbtenv.sh && python3 tests/smoke/run.py
 
 Checks, in order: the bundle is the one this repo's manifest describes and its files match
 SHA256SUMS; the env script set every variable and put each tool dir on PATH; every tool
-reports its pinned version; a minimal RP2350 project builds using the prebuilt pioasm and
-picotool, once with the env and once with only cmake/initial-cache.cmake; optionally the
-firmware builds for the given targets.
+reports its pinned version; a minimal RP2350 project (tests/smoke/blink) builds using the
+prebuilt pioasm and picotool, once with the env and once with only
+cmake/initial-cache.cmake. In a container whose ENV already holds the variables, run it
+without sourcing anything.
 """
 
 from __future__ import annotations
@@ -112,7 +113,8 @@ def cache_value(build: Path, name: str) -> str | None:
     return None
 
 
-def build_blink(root: Path, work: Path, use_env: bool) -> None:
+def build_blink(root: Path, work: Path, use_env: bool) -> str:
+    """Build the RP2350 smoke project; returns the sha256 of its blink.uf2."""
     label = 'env' if use_env else 'initial-cache'
     print(f'[blink via {label}]')
     build = work / f'blink-{label}'
@@ -124,39 +126,27 @@ def build_blink(root: Path, work: Path, use_env: bool) -> None:
         args[1:1] = ['-C', root / 'cmake' / 'initial-cache.cmake']
     run(args, env_=child_env)
     run(['cmake', '--build', build], env_=child_env)
-    check((build / 'blink.uf2').is_file(), 'blink.uf2 built (picotool ran)')
+    uf2 = build / 'blink.uf2'
+    check(uf2.is_file(), 'blink.uf2 built (picotool ran)')
     for name, rel in (('pioasm_DIR', 'tools/pioasm'), ('picotool_DIR', 'tools/picotool')):
         value = cache_value(build, name)
         check(value is not None and same_path(value, root / rel), f'{name} is the bundled {rel}')
     check(not (build / 'pioasm').exists() and not (build / '_deps' / 'picotool-src').exists(),
           'pioasm and picotool were not built from source')
+    with uf2.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def build_firmware(root: Path, source: Path, targets: list[str], work: Path, platform) -> None:
-    python = root / manifest.load().component('python').exe(platform)
-    summary = []
-    for target in targets:
-        print(f'[firmware {target}]')
-        build = work / f'firmware-{target}'
-        run(['cmake', '-G', 'Ninja', '-S', source, '-B', build, '-DCMAKE_BUILD_TYPE=Release',
-             f'-DFW_TARGET={target}', f'-DPython3_EXECUTABLE={python}'])
-        run(['cmake', '--build', build], timeout=3600)
-        uf2 = build / 'flipperone-mcu-firmware.uf2'
-        check(uf2.is_file(), f'{target}: {uf2.name} built')
-        with uf2.open('rb') as stream:
-            digest = hashlib.file_digest(stream, 'sha256').hexdigest()
-        print(f'  {target}  {digest}')
-        summary.append(f'| {platform.name} | {target} | `{digest}` |')
+def report(platform, digest: str) -> None:
+    """blink.uf2's hash, for comparing builds across platforms."""
+    print(f'  blink.uf2  {digest}')
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as out:
-            out.write('| Platform | Target | flipperone-mcu-firmware.uf2 sha256 |\n|---|---|---|\n')
-            out.write('\n'.join(summary) + '\n')
+            out.write(f'| Platform | blink.uf2 sha256 |\n|---|---|\n| {platform.name} | `{digest}` |\n')
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--firmware', type=Path, help='flipperone-mcu-firmware checkout to build')
-    parser.add_argument('--target', action='append', default=[], help='firmware target (repeatable)')
     parser.add_argument('--skip-blink', action='store_true')
     parser.add_argument('--work', type=Path, help='build directory (default: a temporary one)')
     args = parser.parse_args(argv)
@@ -174,10 +164,9 @@ def main(argv: list[str] | None = None) -> int:
         work = args.work.resolve() if args.work else Path(tmp)
         work.mkdir(parents=True, exist_ok=True)
         if not args.skip_blink:
-            build_blink(root, work, use_env=True)
+            digest = build_blink(root, work, use_env=True)
             build_blink(root, work, use_env=False)
-        if args.firmware:
-            build_firmware(root, args.firmware.resolve(), args.target or ['f2'], work, platform)
+            report(platform, digest)
     print('[smoke] passed')
     return 0
 

@@ -2,6 +2,7 @@
 
 #include "blink.pio.h"
 #include "hardware/pio.h"
+#include "pico/btstack_flash_bank.h"
 #include "pico/stdlib.h"
 
 int main(void) {
@@ -14,7 +15,7 @@ int main(void) {
     pio_sm_init(pio0, 0, offset, &config);
     pio_sm_set_enabled(pio0, 0, true);
     for(;;) {
-        printf("blink\n");
+        printf("blink, flash bank at 0x%x\n", (unsigned)PICO_FLASH_BANK_STORAGE_OFFSET);
         sleep_ms(1000);
     }
 }

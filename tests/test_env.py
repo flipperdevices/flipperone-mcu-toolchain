@@ -76,7 +76,7 @@ def test_windows_scripts_cover_every_variable(mf):
         assert f'$env:{var.name} = ' in scripts['fbtenv.ps1']
         assert f'set "{var.name}=' in scripts['fbtenv.cmd']
     assert '\r\n' in scripts['fbtenv.cmd'] and '\n' not in scripts['fbtenv.cmd'].replace('\r\n', '')
-    assert "F1_OPENOCD = $_foRootF + '/tools/openocd/openocd.exe'" in scripts['fbtenv.ps1']
+    assert "OPENOCD_SCRIPTS = $_foRootF + '/tools/openocd/scripts'" in scripts['fbtenv.ps1']
     for d in env.path_dirs(mf, platform):
         assert d.replace('/', '\\') in scripts['fbtenv.cmd']
 

@@ -7,7 +7,7 @@ Orientation for AI agents in this repository. [README.md](README.md) and
 
 The assembler for the Flipper One MCU toolchain bundle: upstream prebuilt tools, pinned by
 URL and sha256 in `manifest.json`, repacked into one relocatable archive per platform and a
-Docker image. The bundle's consumer is `flipperone-mcu-firmware`.
+Docker image.
 
 ## Layout
 
@@ -15,9 +15,9 @@ Docker image. The bundle's consumer is `flipperone-mcu-firmware`.
 | --- | --- |
 | `manifest.json` | Every component: kind (archive, git or pip), version, license, `dest`, per-platform URL and sha256, and the version check |
 | `assembler/` | Stdlib-only Python 3.12. `__main__` assembles; `pin` fills and checks hashes; `env` defines the runtime contract and renders the env scripts |
-| `python/` | The firmware's build-time Python dependencies and their hashed universal lock |
+| `python/` | The bundle's build-time Python packages and their hashed universal lock |
 | `docker/Dockerfile` | The image built from the Linux bundles |
-| `tests/` | Host unit tests; `smoke/run.py` tests a real unpacked bundle |
+| `tests/` | Host unit tests; `smoke/run.py` tests a real unpacked bundle by building the RP2350 project in `smoke/blink` |
 
 ## Rules that are easy to get wrong
 
