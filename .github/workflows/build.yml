@@ -145,8 +145,6 @@ jobs:
           - { platform: windows-x64, runner: windows-2022 }
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
-    # The firmware build has POSIX assumptions on Windows until its A-P1.2 work lands.
-    continue-on-error: ${{ matrix.platform == 'windows-x64' }}
     defaults:
       run:
         shell: bash
