@@ -10,6 +10,11 @@
 ARG DEBIAN_IMAGE=debian:trixie-20261104-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2
 FROM ${DEBIAN_IMAGE}
 
+# Links the ghcr package to its repository (visibility, permissions, README).
+LABEL org.opencontainers.image.source=https://github.com/flipperdevices/flipperone-mcu-toolchain \
+      org.opencontainers.image.description="Flipper One MCU toolchain" \
+      org.opencontainers.image.licenses="MIT AND GPL-3.0-or-later AND GPL-2.0-or-later AND BSD-3-Clause AND Apache-2.0"
+
 ARG DEBIAN_SNAPSHOT=20261104T000000Z
 ARG TARGETARCH
 ARG TOOLCHAIN_TAG

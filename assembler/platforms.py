@@ -33,6 +33,11 @@ PLATFORMS = {
 }
 
 
+def archive_name(tag: str, platform_name: str) -> str:
+    """File name of a bundle archive."""
+    return f'flipperone-mcu-toolchain-{tag}-{platform_name}.{PLATFORMS[platform_name].archive}'
+
+
 def host_platform() -> str | None:
     """The bundle platform this interpreter runs on, or None if unsupported."""
     machine = platform.machine().lower()

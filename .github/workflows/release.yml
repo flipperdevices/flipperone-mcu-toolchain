@@ -1,0 +1,98 @@
+name: Release
+
+# Push a tag v<N> on a commit of dev. Everything is rebuilt from the tag; the release gets
+# the four archives, SHA256SUMS and release.json, and the image goes to ghcr.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}  # not "release-": groups are case-insensitive and build.yml uses "Release-<ref>"
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Tag is v<N> on dev
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[1-9][0-9]*$ ]]; then
+            echo "::error::release tags are v<N>, N a positive integer; got $GITHUB_REF_NAME"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/dev; then
+            echo "::error::$GITHUB_REF_NAME does not point at a commit on dev"
+            exit 1
+          fi
+
+  build:
+    needs: check
+    uses: ./.github/workflows/build.yml
+    with:
+      tag: ${{ github.ref_name }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+    env:
+      TAG: ${{ github.ref_name }}
+      IMAGE: ghcr.io/${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: toolchain-*
+          path: dist
+          merge-multiple: true
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Push the image
+        run: |
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker buildx build -f docker/Dockerfile --platform linux/amd64,linux/arm64 \
+            --build-arg "TOOLCHAIN_TAG=$TAG" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label "org.opencontainers.image.version=$TAG" \
+            --tag "$IMAGE:$TAG" --push --metadata-file "$RUNNER_TEMP/image.json" dist
+          digest=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["containerimage.digest"])' \
+            "$RUNNER_TEMP/image.json")
+          echo "IMAGE_DIGEST=$digest" >> "$GITHUB_ENV"
+          echo "Pushed $IMAGE@$digest" >> "$GITHUB_STEP_SUMMARY"
+      - name: Release files
+        run: python -m assembler.release --dist dist --tag "$TAG" --image "$IMAGE@$IMAGE_DIGEST" --out release
+      # Attestations need a public repository (or GitHub Enterprise Cloud).
+      - name: Attest the archives
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-checksums: release/SHA256SUMS
+      - name: Attest the image
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ env.IMAGE_DIGEST }}
+          push-to-registry: true
+      - name: Create the release
+        run: |
+          gh release create "$TAG" --verify-tag --title "$TAG" --notes-file release/release-notes.md \
+            dist/flipperone-mcu-toolchain-"$TAG"-*.tar.gz dist/flipperone-mcu-toolchain-"$TAG"-*.zip \
+            release/SHA256SUMS release/release.json

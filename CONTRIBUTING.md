@@ -35,6 +35,34 @@ Branch from `dev` and open a pull request against it. CI does the following:
 
 Use only releases that are at least two weeks old.
 
+## Releasing
+
+1. Make sure CI is green on the `dev` commit to release.
+2. Tag it with the next `v<N>` and push the tag:
+
+   ```shell
+   git tag v<N> <commit> && git push origin v<N>
+   ```
+
+3. The Release workflow then:
+   - checks that the tag is `v<N>` on a `dev` commit
+   - rebuilds and tests every platform from the tag (it reuses `build.yml`)
+   - pushes the image
+   - creates the GitHub release with the archives, `SHA256SUMS` and `release.json`
+   - attests the archives and the image, if the repository is public
+
+Consumers pick up new releases by reading `release.json`. This repository never opens
+pull requests anywhere else.
+
+## Upstream changes
+
+The weekly Upstream workflow, which can also be run by hand, does two things:
+- runs `python3 -m assembler.pin`. It fails if any pinned upstream file has changed or
+  disappeared.
+- runs `python3 -m assembler.mirror`. It uploads every pinned archive that is not yet in
+  the `mirror` release, as `<sha256>-<file name>`. Mirror assets are never deleted,
+  because old tags may need them.
+
 ## Python build packages
 
 `python/requirements-build.in` holds the build-time Python packages that projects built

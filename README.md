@@ -89,6 +89,26 @@ in `/opt/flipperone-mcu-toolchain`, the environment above is set through `ENV`, 
 image runs as the non-root user `builder`, uid 1000. In a GitHub Actions `container:` job,
 add `options: --user root` so that the job can write to the workspace the runner mounts.
 
+## Releases
+
+A release is tagged `v<N>`, with N counting up; component versions are in the release,
+not in the tag. Each GitHub release has:
+
+- the four archives
+- `SHA256SUMS`, covering the archives
+- `release.json`: the machine-readable description, for tools that pin or update a
+  toolchain. It has `tag`, `source_commit`, `archives` (per platform: `name`, `sha256`,
+  `size`), `image` (`name`, `digest`), and `components` (`version`, `license`, and
+  `commit` for git components).
+
+The image is `ghcr.io/flipperdevices/flipperone-mcu-toolchain:v<N>`, for linux/amd64 and
+linux/arm64. Pin it by the digest in `release.json`, not by tag.
+
+Once the repository is public, each release also carries build provenance for the
+archives and the image. Check it with:
+- `gh attestation verify <archive> -R flipperdevices/flipperone-mcu-toolchain`
+- `gh attestation verify oci://ghcr.io/flipperdevices/flipperone-mcu-toolchain@<digest> -R flipperdevices/flipperone-mcu-toolchain`
+
 ## Bundle contents
 
 ```
@@ -132,6 +152,10 @@ together with a `.sha256` file.
   entries are sorted, each mtime is `SOURCE_DATE_EPOCH` (by default the commit time), and
   ownership and modes are normalised.
 - **Offline:** `--offline` builds from the cache alone.
+- **Mirror:** with `--mirror owner/repo@tag` (or `FLIPPERONE_TOOLCHAIN_MIRROR`), a failed or
+  changed upstream download is retried from that release. The weekly Upstream workflow
+  keeps a copy of every pinned archive in this repository's `mirror` release, so old tags
+  stay buildable. The Pico SDK, from git, and the PyPI packages are not mirrored.
 - **Native host only:** the Python packages install with the bundled interpreter, so a
   bundle must be assembled on its own platform.
 

@@ -59,6 +59,14 @@ class Component:
         root = spec.get('root', self.raw.get('root'))
         return Asset(url=spec['url'], sha256=spec['sha256'], root=root, exclude=tuple(spec.get('exclude', ())))
 
+    def all_assets(self) -> list[Asset]:
+        """Every asset of an archive component, one per platform key (or "any")."""
+        out = []
+        for spec in self.raw.get('assets', {}).values():
+            out.append(Asset(url=spec['url'], sha256=spec['sha256'], root=spec.get('root', self.raw.get('root')),
+                             exclude=tuple(spec.get('exclude', ()))))
+        return out
+
     def exe(self, platform: Platform) -> str | None:
         """Main executable, relative to the bundle root."""
         exe = self.raw.get('exe')

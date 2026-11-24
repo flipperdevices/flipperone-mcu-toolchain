@@ -5,6 +5,12 @@ on:
   push:
     branches: [dev]
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      tag:
+        description: Bundle tag; release.yml passes the release tag
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -14,6 +20,10 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
+  # The release tag when called from release.yml, otherwise dev-<commit>.
+  TAG_INPUT: ${{ inputs.tag }}
+  # Used only if an upstream download fails; filled by upstream.yml.
+  FLIPPERONE_TOOLCHAIN_MIRROR: ${{ github.repository }}@mirror
   # Where the smoke tests unpack a bundle: away from the checkout, with a space in it.
   UNPACKED: unpacked toolchain
 
@@ -55,14 +65,16 @@ jobs:
         with:
           python-version: '3.12'
       - name: Assemble
+        env:
+          GITHUB_TOKEN: ${{ github.token }}  # reads the mirror release, if upstream fails
         run: |
           python -m assembler --platform '${{ matrix.platform }}' --out dist \
-            --tag "dev-${GITHUB_SHA::12}" --cache-dir "$RUNNER_TEMP/cache"
+            --tag "${TAG_INPUT:-dev-${GITHUB_SHA::12}}" --cache-dir "$RUNNER_TEMP/cache"
       - name: Re-assemble and compare (determinism)
         if: matrix.platform == 'linux-x86_64'
         run: |
           python -m assembler --platform '${{ matrix.platform }}' --out "$RUNNER_TEMP/again" \
-            --tag "dev-${GITHUB_SHA::12}" --cache-dir "$RUNNER_TEMP/cache" --offline
+            --tag "${TAG_INPUT:-dev-${GITHUB_SHA::12}}" --cache-dir "$RUNNER_TEMP/cache" --offline
           diff <(cut -d' ' -f1 dist/*.sha256) <(cut -d' ' -f1 "$RUNNER_TEMP"/again/*.sha256)
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -144,11 +156,11 @@ jobs:
       - name: Build both architectures
         run: |
           docker buildx build -f docker/Dockerfile --platform linux/amd64,linux/arm64 \
-            --build-arg "TOOLCHAIN_TAG=dev-${GITHUB_SHA::12}" context
+            --build-arg "TOOLCHAIN_TAG=${TAG_INPUT:-dev-${GITHUB_SHA::12}}" context
       - name: Smoke-test the amd64 image
         run: |
           docker buildx build -f docker/Dockerfile --platform linux/amd64 --load \
-            --build-arg "TOOLCHAIN_TAG=dev-${GITHUB_SHA::12}" -t flipperone-mcu-toolchain:ci context
+            --build-arg "TOOLCHAIN_TAG=${TAG_INPUT:-dev-${GITHUB_SHA::12}}" -t flipperone-mcu-toolchain:ci context
           # As the image's own non-root user, with the bundle read-only and only the image ENV.
           docker run --rm -v "$PWD:/src:ro" -w /src flipperone-mcu-toolchain:ci \
             python3 tests/smoke/run.py --work /tmp/smoke

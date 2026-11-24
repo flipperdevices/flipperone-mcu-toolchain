@@ -14,9 +14,10 @@ Docker image.
 | Path | Contents |
 | --- | --- |
 | `manifest.json` | Every component: kind (archive, git or pip), version, license, `dest`, per-platform URL and sha256, and the version check |
-| `assembler/` | Stdlib-only Python 3.12. `__main__` assembles; `pin` fills and checks hashes; `env` defines the runtime contract and renders the env scripts |
+| `assembler/` | Stdlib-only Python 3.12. `__main__` assembles; `pin` fills and checks hashes; `env` defines the runtime contract and renders the env scripts; `release` writes `SHA256SUMS`, `release.json` and the notes; `mirror` fills the `mirror` release |
 | `python/` | The bundle's build-time Python packages and their hashed universal lock |
 | `docker/Dockerfile` | The image built from the Linux bundles |
+| `.github/workflows/` | `build.yml` (PRs, `dev`, and called by the release), `release.yml` (tags `v<N>`), `upstream.yml` (weekly pin check and mirror) |
 | `tests/` | Host unit tests; `smoke/run.py` tests a real unpacked bundle by building the RP2350 project in `smoke/blink` |
 
 ## Rules that are easy to get wrong

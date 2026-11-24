@@ -13,7 +13,7 @@ import tarfile
 import tempfile
 from pathlib import Path
 
-from .fetch import fetch
+from .fetch import Mirror, fetch
 from .manifest import REPO_ROOT, Component, Manifest
 from .platforms import Platform, host_platform
 from .unpack import extract, select_root
@@ -75,9 +75,10 @@ def restamp_pyc_sources(tree: Path) -> int:
     return count
 
 
-def install_archive(c: Component, platform: Platform, bundle: Path, cache: Path, offline: bool) -> None:
+def install_archive(c: Component, platform: Platform, bundle: Path, cache: Path, offline: bool,
+                    mirror: Mirror | None = None) -> None:
     asset = c.asset(platform)
-    archive = fetch(asset.url, asset.sha256, cache / 'downloads', offline)
+    archive = fetch(asset.url, asset.sha256, cache / 'downloads', offline, mirror)
     target = bundle / c.dest
     if target.exists():
         raise InstallError(f'{c.name}: {target} already exists')
@@ -221,9 +222,9 @@ def install_pip(c: Component, manifest: Manifest, platform: Platform, bundle: Pa
 
 
 def install(c: Component, manifest: Manifest, platform: Platform, bundle: Path, cache: Path,
-            offline: bool) -> None:
+            offline: bool, mirror: Mirror | None = None) -> None:
     if c.kind == 'archive':
-        install_archive(c, platform, bundle, cache, offline)
+        install_archive(c, platform, bundle, cache, offline, mirror)
     elif c.kind == 'git':
         install_git(c, bundle, cache, offline)
     elif c.kind == 'pip':
