@@ -159,8 +159,10 @@ def install_git(c: Component, bundle: Path, cache: Path, offline: bool) -> None:
             # Checkout times differ per clone; the commit time does not.
             stamp = int(_git(['show', '-s', '--format=%ct', 'HEAD'], tree))
             rmtree(tree / '.git')
+            no_follow = os.utime in os.supports_follow_symlinks  # not on Windows
             for path in [tree, *tree.rglob('*')]:
-                os.utime(path, (stamp, stamp), follow_symlinks=False)
+                if no_follow or not path.is_symlink():
+                    os.utime(path, (stamp, stamp), follow_symlinks=not no_follow)
             cached.parent.mkdir(parents=True, exist_ok=True)
             partial = cached.with_name(cached.name + '.part')
             with tarfile.open(partial, 'w') as tar:

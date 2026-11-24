@@ -47,7 +47,7 @@ jobs:
         include:
           - { platform: linux-x86_64, runner: ubuntu-24.04 }
           - { platform: linux-aarch64, runner: ubuntu-24.04-arm }
-          - { platform: darwin-arm64, runner: macos-14 }
+          - { platform: darwin-arm64, runner: macos-15 }
           - { platform: windows-x64, runner: windows-2022 }
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
@@ -76,6 +76,11 @@ jobs:
             dist/flipperone-mcu-toolchain-*
           if-no-files-found: error
           compression-level: 0
+      - name: Linux runtime libraries (picotool, OpenOCD)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libusb-1.0-0 libftdi1-2 libhidapi-hidraw0
       - name: Unpack elsewhere
         run: |
           dir="$RUNNER_TEMP/$UNPACKED"
@@ -87,6 +92,7 @@ jobs:
       - name: Smoke test (bash)
         if: runner.os != 'Windows'
         run: |
+          # shellcheck source=/dev/null
           . "$RUNNER_TEMP/$UNPACKED/fbtenv.sh"
           python3 tests/smoke/run.py
       - name: Smoke test (PowerShell)
@@ -123,6 +129,7 @@ jobs:
           dir="$RUNNER_TEMP/$UNPACKED"
           mkdir -p "$dir"
           tar -xzf dist/*.tar.gz -C "$dir"
+          # shellcheck source=/dev/null
           . "$dir/fbtenv.sh"
           python3 tests/smoke/run.py
 
@@ -134,7 +141,7 @@ jobs:
         include:
           - { platform: linux-x86_64, runner: ubuntu-24.04 }
           - { platform: linux-aarch64, runner: ubuntu-24.04-arm }
-          - { platform: darwin-arm64, runner: macos-14 }
+          - { platform: darwin-arm64, runner: macos-15 }
           - { platform: windows-x64, runner: windows-2022 }
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
@@ -157,6 +164,11 @@ jobs:
         with:
           name: toolchain-${{ matrix.platform }}
           path: dist
+      - name: Linux runtime libraries (picotool, OpenOCD)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libusb-1.0-0 libftdi1-2 libhidapi-hidraw0
       - name: Unpack
         run: |
           dir="$RUNNER_TEMP/$UNPACKED"
@@ -168,6 +180,7 @@ jobs:
       - name: Build f2 and f1 (bash)
         if: runner.os != 'Windows'
         run: |
+          # shellcheck source=/dev/null
           . "$RUNNER_TEMP/$UNPACKED/fbtenv.sh"
           python3 tests/smoke/run.py --skip-blink --firmware firmware --target f2 --target f1
       - name: Build f2 and f1 (PowerShell)
