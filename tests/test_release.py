@@ -50,6 +50,9 @@ def test_main_writes_record_sums_and_notes(dist, tmp_path, monkeypatch):
     sums = (out / 'SHA256SUMS').read_text().splitlines()
     assert len(sums) == len(manifest.load().platforms)
     assert all(len(line.split('  ')[0]) == 64 for line in sums)
+    assert record['components']['libusb']['platforms'] == ['linux-aarch64', 'linux-x86_64']
+    assert record['components']['libgpiod']['platforms'] == ['linux-aarch64']
+    assert '(linux-aarch64, linux-x86_64)' in (out / 'release-notes.md').read_text()
     assert image in (out / 'release-notes.md').read_text()
 
 

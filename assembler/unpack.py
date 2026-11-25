@@ -1,8 +1,9 @@
-"""Safe archive extraction: tar (gz/xz) and zip/wheel, never writing outside the target."""
+"""Safe archive extraction: tar (gz/xz), zip/wheel and deb, never writing outside the target."""
 
 from __future__ import annotations
 
 import fnmatch
+import io
 import os
 import posixpath
 import stat
@@ -54,6 +55,23 @@ def _extract_zip(archive: Path, dest: Path, exclude: tuple[str, ...]) -> None:
                 target.chmod(0o755)
 
 
+def deb_data(archive: Path) -> bytes:
+    """The data.tar.* member of a Debian package (an ar archive)."""
+    data = archive.read_bytes()
+    if data[:8] != b'!<arch>\n':
+        raise UnsafeArchive(f'{archive.name}: not a Debian package')
+    offset = 8
+    while offset + 60 <= len(data):
+        header = data[offset:offset + 60]
+        name = header[:16].decode('ascii').strip().rstrip('/')
+        size = int(header[48:58])
+        offset += 60
+        if name in ('data.tar.xz', 'data.tar.gz', 'data.tar'):
+            return data[offset:offset + size]
+        offset += size + (size & 1)
+    raise UnsafeArchive(f'{archive.name}: no data.tar.xz, data.tar.gz or data.tar')
+
+
 def extract(archive: Path, dest: Path, exclude: tuple[str, ...] = ()) -> None:
     """Unpack `archive` into the (new or empty) directory `dest`, skipping members whose
     archive path matches an `exclude` pattern (fnmatch)."""
@@ -63,8 +81,9 @@ def extract(archive: Path, dest: Path, exclude: tuple[str, ...] = ()) -> None:
     name = archive.name
     if name.endswith(('.zip', '.whl')):
         _extract_zip(archive, dest, exclude)
-    elif name.endswith(('.tar.gz', '.tgz', '.tar.xz', '.tar.bz2', '.tar')):
-        with tarfile.open(archive) as tf:
+    elif name.endswith(('.tar.gz', '.tgz', '.tar.xz', '.tar.bz2', '.tar', '.deb')):
+        source = {'fileobj': io.BytesIO(deb_data(archive))} if name.endswith('.deb') else {'name': archive}
+        with tarfile.open(**source) as tf:
             # The "data" filter rejects absolute paths, "..", links leaving dest and device files.
             members = [m for m in tf.getmembers() if not _excluded(m.name, exclude)]
             tf.extractall(dest, members=members, filter='data')

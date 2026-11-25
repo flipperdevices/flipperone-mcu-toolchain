@@ -4,6 +4,11 @@ Components install in manifest order. Kinds:
 - archive: a per-platform (or "any") upstream archive, unpacked into `dest`.
 - git: a repository at a pinned commit, with pinned submodules, copied without .git.
 - pip: hash-locked wheels installed into the interpreter of another component.
+- deb: shared libraries taken from a Debian package, for the platforms it lists. Several
+  deb components can share one `dest`.
+
+`patchelf` pins the patchelf wheel, per host, that points Linux binaries at their
+bundled libraries (`runpath`).
 """
 
 from __future__ import annotations
@@ -22,7 +27,9 @@ MANIFEST = REPO_ROOT / 'manifest.json'
 
 SHA256_RE = re.compile(r'[0-9a-f]{64}')
 COMMIT_RE = re.compile(r'[0-9a-f]{40}')
-KINDS = ('archive', 'git', 'pip')
+KINDS = ('archive', 'git', 'pip', 'deb')
+LINUX_PLATFORMS = ('linux-x86_64', 'linux-aarch64')
+SONAME_RE = re.compile(r'lib[A-Za-z0-9_.+-]+\.so(\.[0-9]+)*')
 
 
 class ManifestError(ValueError):
@@ -35,6 +42,7 @@ class Asset:
     sha256: str
     root: str | None = None  # path inside the archive to install; None = auto-detect
     exclude: tuple[str, ...] = ()  # archive members to skip (fnmatch patterns)
+    files: tuple[tuple[str, str], ...] = ()  # deb: (installed name, member path)
 
     @property
     def filename(self) -> str:
@@ -56,16 +64,19 @@ class Component:
         spec = assets.get(platform.name, assets.get('any'))
         if spec is None:
             raise ManifestError(f'{self.name}: no asset for {platform.name}')
-        root = spec.get('root', self.raw.get('root'))
-        return Asset(url=spec['url'], sha256=spec['sha256'], root=root, exclude=tuple(spec.get('exclude', ())))
+        return self._asset(spec)
+
+    def _asset(self, spec: dict) -> Asset:
+        return Asset(url=spec['url'], sha256=spec['sha256'], root=spec.get('root', self.raw.get('root')),
+                     exclude=tuple(spec.get('exclude', ())), files=tuple(sorted(spec.get('files', {}).items())))
+
+    def applies_to(self, platform: Platform) -> bool:
+        """Whether this component goes into the platform's bundle (deb: only where listed)."""
+        return self.kind != 'deb' or platform.name in self.raw['assets']
 
     def all_assets(self) -> list[Asset]:
-        """Every asset of an archive component, one per platform key (or "any")."""
-        out = []
-        for spec in self.raw.get('assets', {}).values():
-            out.append(Asset(url=spec['url'], sha256=spec['sha256'], root=spec.get('root', self.raw.get('root')),
-                             exclude=tuple(spec.get('exclude', ()))))
-        return out
+        """Every asset of an archive or deb component, one per platform key (or "any")."""
+        return [self._asset(spec) for spec in self.raw.get('assets', {}).values()]
 
     def exe(self, platform: Platform) -> str | None:
         """Main executable, relative to the bundle root."""
@@ -93,6 +104,13 @@ class Manifest:
     platforms: tuple[str, ...]
     components: tuple[Component, ...]
     sha256: str
+    patchelf: dict = field(default_factory=dict, repr=False, compare=False)
+
+    def patchelf_asset(self, host: str) -> Asset:
+        spec = self.patchelf.get('assets', {}).get(host)
+        if spec is None:
+            raise ManifestError(f'no patchelf for host {host}')
+        return Asset(url=spec['url'], sha256=spec['sha256'])
 
     def component(self, name: str) -> Component:
         for c in self.components:
@@ -105,6 +123,15 @@ def _rel_path_ok(value: object) -> bool:
     if not isinstance(value, str) or not value or value.startswith('/') or '\\' in value:
         return False
     return '..' not in PurePosixPath(value).parts
+
+
+def _check_download(where: str, key: str, spec: dict) -> list[str]:
+    errors = []
+    if not str(spec.get('url', '')).startswith('https://'):
+        errors.append(f'{where}/{key}: url must be https')
+    if not SHA256_RE.fullmatch(str(spec.get('sha256', ''))):
+        errors.append(f'{where}/{key}: sha256 missing or malformed')
+    return errors
 
 
 def validate(data: dict) -> list[str]:
@@ -120,8 +147,18 @@ def validate(data: dict) -> list[str]:
     if not isinstance(components, list) or not components:
         return errors + ['components must be a non-empty list']
 
+    patchelf = data.get('patchelf')
+    if patchelf is not None:
+        if not isinstance(patchelf, dict) or not patchelf.get('version') or not patchelf.get('assets'):
+            errors.append('patchelf needs version and assets')
+        else:
+            for key, spec in patchelf['assets'].items():
+                if key not in PLATFORMS:
+                    errors.append(f'patchelf: unknown host {key}')
+                errors += _check_download('patchelf', key, spec)
+
     names: set[str] = set()
-    dests: set[str] = set()
+    dests: dict[str, str] = {}
     for c in components:
         name = c.get('name', '?')
         where = f'component {name}'
@@ -140,10 +177,34 @@ def validate(data: dict) -> list[str]:
             dest = c.get('dest')
             if not _rel_path_ok(dest):
                 errors.append(f'{where}: dest must be a relative posix path')
-            elif any(dest == d or dest.startswith(d + '/') or d.startswith(dest + '/') for d in dests):
+            elif any((dest == d and not (kind == k == 'deb')) or dest.startswith(d + '/') or d.startswith(dest + '/')
+                     for d, k in dests.items()):
                 errors.append(f'{where}: dest {dest} overlaps another component')
             else:
-                dests.add(dest)
+                dests[dest] = kind
+        if 'runpath' in c:
+            if kind != 'archive' or 'exe' not in c:
+                errors.append(f'{where}: runpath needs an archive component with exe')
+            elif not isinstance(c['runpath'], str) or not c['runpath'].startswith('$ORIGIN'):
+                errors.append(f'{where}: runpath must start with $ORIGIN')
+            elif patchelf is None:
+                errors.append(f'{where}: runpath needs a patchelf pin')
+        if kind == 'deb':
+            assets = c.get('assets')
+            if not isinstance(assets, dict) or not assets:
+                errors.append(f'{where}: assets missing')
+                continue
+            for key, spec in assets.items():
+                if key not in LINUX_PLATFORMS:
+                    errors.append(f'{where}: deb assets are for {LINUX_PLATFORMS}, not {key}')
+                errors += _check_download(where, key, spec)
+                files = spec.get('files')
+                if not isinstance(files, dict) or not files:
+                    errors.append(f'{where}/{key}: files missing')
+                    continue
+                for name, member in files.items():
+                    if not SONAME_RE.fullmatch(name) or not _rel_path_ok(member):
+                        errors.append(f'{where}/{key}: bad file {name} <- {member}')
         if kind == 'archive':
             assets = c.get('assets')
             if not isinstance(assets, dict) or not assets:
@@ -156,10 +217,7 @@ def validate(data: dict) -> list[str]:
             for key, spec in assets.items():
                 if key != 'any' and key not in PLATFORMS:
                     errors.append(f'{where}: unknown platform {key}')
-                if not str(spec.get('url', '')).startswith('https://'):
-                    errors.append(f'{where}/{key}: url must be https')
-                if not SHA256_RE.fullmatch(str(spec.get('sha256', ''))):
-                    errors.append(f'{where}/{key}: sha256 missing or malformed')
+                errors += _check_download(where, key, spec)
                 exclude = spec.get('exclude', [])
                 if not isinstance(exclude, list) or not all(isinstance(e, str) and e for e in exclude):
                     errors.append(f'{where}/{key}: exclude must be a list of patterns')
@@ -201,4 +259,5 @@ def load(path: Path = MANIFEST) -> Manifest:
         )
         for c in data['components']
     )
-    return Manifest(tuple(data['platforms']), components, hashlib.sha256(raw_bytes).hexdigest())
+    return Manifest(tuple(data['platforms']), components, hashlib.sha256(raw_bytes).hexdigest(),
+                    data.get('patchelf', {}))

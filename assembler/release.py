@@ -54,6 +54,8 @@ def release_record(mf: manifest.Manifest, tag: str, commit: str, archives: dict[
         entry = {'version': c.version, 'license': c.license}
         if c.kind == 'git':
             entry['commit'] = c.raw['commit']
+        elif c.kind == 'deb':
+            entry['platforms'] = sorted(c.raw['assets'])
         components[c.name] = entry
     record = {
         'schema': 1,
@@ -84,7 +86,8 @@ def notes(record: dict) -> str:
         lines += ['', 'Docker image (linux/amd64, linux/arm64):', '',
                   f'    {image["name"]}@{image["digest"]}']
     lines += ['', '| Component | Version | License |', '|---|---|---|']
-    lines += [f'| {n} | {c["version"]} | {c["license"]} |' for n, c in record['components'].items()]
+    lines += [f'| {n} | {c["version"]}{" (" + ", ".join(c["platforms"]) + ")" if "platforms" in c else ""} '
+              f'| {c["license"]} |' for n, c in record['components'].items()]
     lines += ['', '`release.json` holds the same data for tools; `SHA256SUMS` lists the archives.']
     return '\n'.join(lines) + '\n'
 

@@ -2,7 +2,8 @@
 
 Branch from `dev` and open a pull request against it. CI does the following:
 - assembles all four platforms on their native runners and smoke-tests each bundle
-- smoke-tests the Linux x86_64 bundle on the oldest supported glibc
+- smoke-tests both Linux bundles on the oldest supported glibc, without the system USB
+  libraries the bundle ships
 - builds the Docker image for both architectures
 - smoke-tests the Docker image as its non-root user, using only the image's `ENV`
 

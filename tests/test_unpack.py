@@ -121,3 +121,40 @@ def test_exclude_skips_matching_members(tmp_path, suffix):
     archive = (tar_with if suffix == 'tar.gz' else zip_with)(tmp_path / f'a.{suffix}', entries)
     unpack.extract(archive, tmp_path / 'out', exclude=('scripts/target/?1879x?1?.cfg',))
     assert [p.name for p in (tmp_path / 'out' / 'scripts' / 'target').iterdir()] == ['rp2350.cfg']
+
+
+def deb_with(path, entries, data_name='data.tar.xz'):
+    """A Debian package: an ar archive holding debian-binary, control and data tarballs."""
+    data = io.BytesIO()
+    with tarfile.open(fileobj=data, mode='w:xz' if data_name.endswith('.xz') else 'w') as tar:
+        for name, payload in entries:
+            info = tarfile.TarInfo(name)
+            info.size = len(payload)
+            tar.addfile(info, io.BytesIO(payload))
+    out = bytearray(b'!<arch>\n')
+    for name, blob in (('debian-binary', b'2.0\n'), ('control.tar.xz', b'x'), (data_name, data.getvalue())):
+        out += f'{name:<16}{0:<12}{0:<6}{0:<6}{644:<8}{len(blob):<10}`\n'.encode() + blob
+        if len(blob) & 1:
+            out += b'\n'
+    path.write_bytes(bytes(out))
+    return path
+
+
+def test_extracts_the_data_of_a_debian_package(tmp_path):
+    deb = deb_with(tmp_path / 'x.deb', [('./usr/lib/libx.so.1', b'elf'), ('./usr/share/doc/x/copyright', b'c')])
+    unpack.extract(deb, tmp_path / 'out')
+    assert (tmp_path / 'out' / 'usr' / 'lib' / 'libx.so.1').read_bytes() == b'elf'
+
+
+@pytest.mark.parametrize('content', [b'not an ar archive', b'!<arch>\n'])
+def test_rejects_a_debian_package_without_data(tmp_path, content):
+    deb = tmp_path / 'x.deb'
+    deb.write_bytes(content)
+    with pytest.raises(unpack.UnsafeArchive):
+        unpack.extract(deb, tmp_path / 'out')
+
+
+def test_a_debian_package_cannot_write_outside(tmp_path):
+    deb = deb_with(tmp_path / 'x.deb', [('../evil', b'x')])
+    with pytest.raises(tarfile.FilterError):
+        unpack.extract(deb, tmp_path / 'out')

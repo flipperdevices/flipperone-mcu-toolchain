@@ -84,9 +84,10 @@ def test_token_is_sent_only_to_the_github_api(monkeypatch):
     assert fetch._request('https://github.com/o/r/releases/download/v/f').get_header('Authorization') is None
 
 
-def test_mirror_wants_every_archive_asset_under_a_unique_name():
+def test_mirror_wants_every_archive_deb_and_patchelf_asset_under_a_unique_name():
     mf = manifest.load()
     names = mirror.wanted(mf)
-    expected = sum(len(c.raw['assets']) for c in mf.components if c.kind == 'archive')
+    expected = sum(len(c.raw['assets']) for c in mf.components if c.kind in ('archive', 'deb'))
+    expected += len(mf.patchelf['assets'])
     assert len(names) == expected
     assert all(name.split('-', 1)[0] == sha for name, (_, sha) in names.items())

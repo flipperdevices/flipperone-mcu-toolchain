@@ -13,7 +13,7 @@ Docker image.
 
 | Path | Contents |
 | --- | --- |
-| `manifest.json` | Every component: kind (archive, git or pip), version, license, `dest`, per-platform URL and sha256, and the version check |
+| `manifest.json` | Every component: kind (archive, git, pip or deb), version, license, `dest`, per-platform URL and sha256, and the version check; the pinned patchelf |
 | `assembler/` | Stdlib-only Python 3.12. `__main__` assembles; `pin` fills and checks hashes; `env` defines the runtime contract and renders the env scripts; `release` writes `SHA256SUMS`, `release.json` and the notes; `mirror` fills the `mirror` release |
 | `python/` | The bundle's build-time Python packages and their hashed universal lock |
 | `docker/Dockerfile` | The image built from the Linux bundles |

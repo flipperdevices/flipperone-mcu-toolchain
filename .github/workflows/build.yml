@@ -83,11 +83,6 @@ jobs:
             dist/flipperone-mcu-toolchain-*
           if-no-files-found: error
           compression-level: 0
-      - name: Linux runtime libraries (picotool, OpenOCD)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libusb-1.0-0 libftdi1-2 libhidapi-hidraw0
       - name: Unpack elsewhere
         run: |
           dir="$RUNNER_TEMP/$UNPACKED"
@@ -115,20 +110,29 @@ jobs:
           call "%RUNNER_TEMP%\%UNPACKED%\fbtenv.cmd"
           python tests/smoke/run.py --skip-blink
 
+  # The oldest supported glibc, and none of the USB libraries the bundle ships
   oldest-glibc:
     needs: assemble
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { platform: linux-x86_64, runner: ubuntu-24.04 }
+          - { platform: linux-aarch64, runner: ubuntu-24.04-arm }
+    runs-on: ${{ matrix.runner }}
     container: ubuntu:22.04
     timeout-minutes: 20
     steps:
       - run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            ca-certificates libusb-1.0-0 libftdi1-2 libhidapi-hidraw0
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates libudev1
+          for package in libusb-1.0-0 libftdi1-2 libhidapi-hidraw0; do
+            if dpkg -s "$package" >/dev/null 2>&1; then echo "$package is installed" >&2; exit 1; fi
+          done
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: toolchain-linux-x86_64
+          name: toolchain-${{ matrix.platform }}
           path: dist
       - name: Smoke test on glibc 2.35
         shell: bash

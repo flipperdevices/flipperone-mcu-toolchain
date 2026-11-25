@@ -5,7 +5,8 @@
 
 Sources: the sha256 digest GitHub records for each release asset, the `.sha` file xPack
 publishes next to each archive (cross-checked against the digest), the PyPI JSON API for
-wheels, and `git ls-remote` for git tags. The assembler still verifies every download.
+wheels, a download for the (immutable) snapshot.debian.org packages, and `git ls-remote`
+for git tags. The assembler still verifies every download.
 Set GITHUB_TOKEN to avoid the anonymous API rate limit.
 """
 
@@ -26,6 +27,7 @@ from .manifest import MANIFEST
 
 GITHUB_ASSET = re.compile(r'https://github\.com/([^/]+)/([^/]+)/releases/download/([^/]+)/([^/]+)$')
 PYPI_FILE = re.compile(r'https://files\.pythonhosted\.org/packages/.+/([^/]+\.whl)$')
+DEBIAN_SNAPSHOT = re.compile(r'https://snapshot\.debian\.org/archive/debian/[0-9TZ]+/pool/.+\.deb$')
 
 
 def _get(url: str, accept: str = 'application/json') -> bytes:
@@ -77,6 +79,8 @@ def upstream_sha256(url: str) -> str:
         if not digest:
             raise LookupError(f'{url}: not in the PyPI release')
         return digest
+    if DEBIAN_SNAPSHOT.match(url):
+        return _hash_download(url)
     raise LookupError(f'{url}: no metadata source; hash it by hand')
 
 
@@ -98,23 +102,30 @@ def main(argv: list[str] | None = None) -> int:
 
     data = json.loads(MANIFEST.read_text())
     problems = 0
+
+    def check(label: str, spec: dict) -> None:
+        nonlocal problems
+        try:
+            digest = upstream_sha256(spec['url'])
+        except LookupError as error:
+            print(f'?? {label}: {error}')
+            problems += 1
+            return
+        if not spec.get('sha256') and args.write:
+            spec['sha256'] = digest
+            print(f'++ {label}: {digest}')
+        elif spec.get('sha256') != digest:
+            print(f'!! {label}: manifest {spec.get("sha256") or "(blank)"}, upstream {digest}')
+            problems += 1
+        else:
+            print(f'ok {label}')
+
+    for key, spec in data.get('patchelf', {}).get('assets', {}).items():
+        check(f'patchelf/{key}', spec)
     for c in data['components']:
-        if c['kind'] == 'archive':
+        if c['kind'] in ('archive', 'deb'):
             for key, spec in c['assets'].items():
-                try:
-                    digest = upstream_sha256(spec['url'])
-                except LookupError as error:
-                    print(f'?? {c["name"]}/{key}: {error}')
-                    problems += 1
-                    continue
-                if not spec.get('sha256') and args.write:
-                    spec['sha256'] = digest
-                    print(f'++ {c["name"]}/{key}: {digest}')
-                elif spec.get('sha256') != digest:
-                    print(f'!! {c["name"]}/{key}: manifest {spec.get("sha256") or "(blank)"}, upstream {digest}')
-                    problems += 1
-                else:
-                    print(f'ok {c["name"]}/{key}')
+                check(f'{c["name"]}/{key}', spec)
         elif c['kind'] == 'git':
             commit = git_tag_commit(c['url'], c['ref'])
             if not c.get('commit') and args.write:
@@ -126,7 +137,7 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(f'ok {c["name"]}')
     if args.write:
-        MANIFEST.write_text(json.dumps(data, indent=2) + '\n')
+        MANIFEST.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
     return 1 if problems else 0
 
 

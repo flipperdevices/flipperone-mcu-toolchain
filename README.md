@@ -71,9 +71,12 @@ chooses its own toolchain file.
 
 ### Host requirements
 
-- **Linux:** glibc 2.34 or newer, for example Ubuntu 22.04 or Debian 12. The Raspberry Pi
-  picotool and OpenOCD builds also need these system libraries:
-  `apt install libusb-1.0-0 libftdi1-2 libhidapi-hidraw0`
+- **Linux:** glibc 2.34 or newer, for example Ubuntu 22.04 or Debian 12, and `libudev1`,
+  which every systemd-based distribution has. picotool and OpenOCD use the libusb,
+  libftdi1, hidapi (and on aarch64 libgpiod) in `tools/lib`, not the system's. To use a debug probe or a BOOTSEL
+  device without root, install udev rules for them once, e.g. picotool's
+  [`60-picotool.rules`](https://github.com/raspberrypi/picotool/blob/master/udev/60-picotool.rules)
+  and OpenOCD's `contrib/60-openocd.rules`, into `/etc/udev/rules.d/`.
 - **macOS:** an archive downloaded with a browser is quarantined. Clear the flag before
   use with `xattr -dr com.apple.quarantine <bundle>`.
 - **Windows:** keep the bundle path short, for example under `%LOCALAPPDATA%`.
@@ -119,6 +122,7 @@ cmake/initial-cache.cmake
 pico-sdk/
 tools/<component>/        arm-none-eabi-gcc, picotool, pioasm, openocd, cmake, ninja,
                           python, uv, ccache, clang-format, clang-tidy
+tools/lib/                Linux only: libusb, libftdi1, hidapi (and libgpiod) for picotool and OpenOCD
 licenses/  THIRD_PARTY.md
 ```
 

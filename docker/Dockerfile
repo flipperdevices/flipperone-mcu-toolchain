@@ -13,7 +13,7 @@ FROM ${DEBIAN_IMAGE}
 # Links the ghcr package to its repository (visibility, permissions, README).
 LABEL org.opencontainers.image.source=https://github.com/flipperdevices/flipperone-mcu-toolchain \
       org.opencontainers.image.description="Flipper One MCU toolchain" \
-      org.opencontainers.image.licenses="MIT AND GPL-3.0-or-later AND GPL-2.0-or-later AND BSD-3-Clause AND Apache-2.0"
+      org.opencontainers.image.licenses="MIT AND GPL-3.0-or-later AND GPL-2.0-or-later AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.1-or-later AND LGPL-2.1-only"
 
 ARG DEBIAN_SNAPSHOT=20261104T000000Z
 ARG TARGETARCH
@@ -21,7 +21,7 @@ ARG TOOLCHAIN_TAG
 
 # Signed snapshot metadata pins every package version; plain http is how snapshot.debian.org
 # is reached before ca-certificates is installed, and apt still verifies the signatures.
-# The libraries are runtime dependencies of the Raspberry Pi picotool and OpenOCD builds.
+# libudev1 is the one system library the bundled USB libraries need.
 RUN set -eux; \
     rm -f /etc/apt/sources.list.d/*; \
     printf '%s\n' \
@@ -30,7 +30,7 @@ RUN set -eux; \
       > /etc/apt/sources.list; \
     apt-get -o Acquire::Retries=3 update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      ca-certificates git xz-utils libusb-1.0-0 libftdi1-2 libhidapi-hidraw0; \
+      ca-certificates git xz-utils libudev1; \
     rm -rf /var/lib/apt/lists/*
 
 RUN --mount=type=bind,source=.,target=/ctx set -eux; \

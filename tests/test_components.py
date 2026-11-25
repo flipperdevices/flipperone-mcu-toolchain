@@ -4,7 +4,9 @@ import py_compile
 
 import pytest
 
-from assembler import components
+from assembler import components, manifest
+from assembler.platforms import PLATFORMS
+from tests.test_unpack import deb_with
 
 
 def compiled(tmp_path, name, text):
@@ -73,3 +75,38 @@ def test_keep_only_retains_listed_files(tmp_path):
     assert files == ['LICENSE', 'platform/embedded/hal_flash_bank.h', 'src/bluetooth.h']
     with pytest.raises(components.InstallError):
         components.keep_only(root, ['src/hci.c'])
+
+
+@pytest.fixture
+def fake_tools(monkeypatch):
+    """Package downloads served from local files; runpath changes recorded, not made."""
+    served, runpaths = {}, []
+    monkeypatch.setattr(components, 'fetch', lambda url, sha256, *_a, **_k: served[url])
+    monkeypatch.setattr(components, 'patchelf', lambda *_a, **_k: 'patchelf')
+    monkeypatch.setattr(components, 'set_runpath',
+                        lambda _tool, binary, runpath: runpaths.append((binary.name, runpath)))
+    return served, runpaths
+
+
+def test_install_deb_copies_the_listed_libraries(tmp_path, fake_tools):
+    served, runpaths = fake_tools
+    mf = manifest.load()
+    c = mf.component('libusb')
+    platform = PLATFORMS['linux-x86_64']
+    asset = c.asset(platform)
+    (name, member), = asset.files
+    served[asset.url] = deb_with(tmp_path / 'p.deb', [(member, b'elf'), (c.license_files[0], b'LGPL')])
+    bundle = tmp_path / 'bundle'
+    bundle.mkdir()
+    components.install(c, mf, platform, bundle, tmp_path / 'cache', offline=True)
+    assert (bundle / c.dest / name).read_bytes() == b'elf'
+    assert (bundle / 'licenses' / 'libusb' / c.license_files[0]).read_text() == 'LGPL'
+    assert runpaths == [(name, '$ORIGIN')]
+    with pytest.raises(components.InstallError, match='already exists'):
+        components.install(c, mf, platform, bundle, tmp_path / 'cache', offline=True)
+
+
+def test_deb_components_are_skipped_off_linux(tmp_path, fake_tools):
+    mf = manifest.load()
+    components.install(mf.component('libusb'), mf, PLATFORMS['darwin-arm64'], tmp_path, tmp_path, offline=True)
+    assert list(tmp_path.iterdir()) == []

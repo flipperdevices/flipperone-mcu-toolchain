@@ -4,7 +4,8 @@
 
 Checks, in order: the bundle is the one this repo's manifest describes and its files match
 SHA256SUMS; the env script set every variable and put each tool dir on PATH; every tool
-reports its pinned version; a minimal RP2350 project (tests/smoke/blink) builds using the
+reports its pinned version; on Linux, the tools load the bundled USB libraries, not the
+system's; a minimal RP2350 project (tests/smoke/blink) builds using the
 prebuilt pioasm and picotool, once with the env and once with only
 cmake/initial-cache.cmake. In a container whose ENV already holds the variables, run it
 without sourcing anything.
@@ -106,6 +107,26 @@ def check_tools(root: Path, mf: manifest.Manifest, platform) -> None:
         check(spec['expect'] in output, f'{c.name}: output contains {spec["expect"]!r}')
 
 
+def check_libraries(root: Path, mf: manifest.Manifest, platform) -> None:
+    """Every bundled library a tool needs resolves inside the bundle (ldd)."""
+    print('[libraries]')
+    bundled = {name: root / c.dest / name for c in mf.components
+               if c.kind == 'deb' and c.applies_to(platform) for name, _ in c.asset(platform).files}
+    for c in mf.components:
+        if not c.raw.get('runpath'):
+            continue
+        output = run(['ldd', root / c.exe(platform)])
+        check('not found' not in output, f'{c.name}: ldd finds every library')
+        resolved = {}
+        for line in output.splitlines():
+            if ' => /' in line:  # "\tname => /path (0x...)"; the path may hold spaces
+                name, target = line.strip().split(' => ', 1)
+                resolved[name] = target.rsplit(' (', 1)[0]
+        used = sorted(set(resolved) & set(bundled))
+        check(bool(used) and all(same_path(resolved[n], bundled[n]) for n in used),
+              f'{c.name}: {", ".join(used)} from the bundle')
+
+
 def cache_value(build: Path, name: str) -> str | None:
     for line in (build / 'CMakeCache.txt').read_text().splitlines():
         if line.startswith(name + ':'):
@@ -160,6 +181,8 @@ def main(argv: list[str] | None = None) -> int:
     platform = PLATFORMS[record['platform']]
     check_env(root, mf, platform, record['tag'])
     check_tools(root, mf, platform)
+    if platform.os == 'linux':
+        check_libraries(root, mf, platform)
     with tempfile.TemporaryDirectory(prefix='fo-smoke-') as tmp:
         work = args.work.resolve() if args.work else Path(tmp)
         work.mkdir(parents=True, exist_ok=True)

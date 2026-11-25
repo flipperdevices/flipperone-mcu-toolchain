@@ -1,4 +1,4 @@
-"""Installers for the three component kinds: archive, git and pip."""
+"""Installers for the component kinds: archive, git, pip and deb."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ import stat
 import subprocess
 import tarfile
 import tempfile
+import zipfile
 from pathlib import Path
 
 from .fetch import Mirror, fetch
@@ -75,8 +76,28 @@ def restamp_pyc_sources(tree: Path) -> int:
     return count
 
 
-def install_archive(c: Component, platform: Platform, bundle: Path, cache: Path, offline: bool,
-                    mirror: Mirror | None = None) -> None:
+def patchelf(manifest: Manifest, cache: Path, offline: bool, mirror: Mirror | None = None) -> Path:
+    """The pinned patchelf for this host, taken from its wheel."""
+    asset = manifest.patchelf_asset(host_platform() or 'unsupported')
+    wheel = fetch(asset.url, asset.sha256, cache / 'downloads', offline, mirror)
+    exe = cache / 'tools' / f'patchelf-{asset.sha256[:16]}' / 'patchelf'
+    if not exe.is_file():
+        with zipfile.ZipFile(wheel) as zf:
+            member = next(n for n in zf.namelist() if n.endswith('.data/scripts/patchelf'))
+            exe.parent.mkdir(parents=True, exist_ok=True)
+            partial = exe.with_name('patchelf.part')
+            partial.write_bytes(zf.read(member))
+            partial.chmod(0o755)
+            os.replace(partial, exe)
+    return exe
+
+
+def set_runpath(tool: Path, binary: Path, runpath: str) -> None:
+    run([tool, '--set-rpath', runpath, binary])
+
+
+def install_archive(c: Component, manifest: Manifest, platform: Platform, bundle: Path, cache: Path,
+                    offline: bool, mirror: Mirror | None = None) -> None:
     asset = c.asset(platform)
     archive = fetch(asset.url, asset.sha256, cache / 'downloads', offline, mirror)
     target = bundle / c.dest
@@ -90,6 +111,32 @@ def install_archive(c: Component, platform: Platform, bundle: Path, cache: Path,
         if c.raw.get('restamp_pyc'):
             print(f'  re-stamped {restamp_pyc_sources(tree)} sources to match their .pyc', flush=True)
         os.replace(select_root(tree, asset.root), target)
+    if c.raw.get('runpath') and platform.os == 'linux':
+        set_runpath(patchelf(manifest, cache, offline, mirror), bundle / c.exe(platform), c.raw['runpath'])
+
+
+def install_deb(c: Component, manifest: Manifest, platform: Platform, bundle: Path, cache: Path,
+                offline: bool, mirror: Mirror | None = None) -> None:
+    """Copy the listed libraries out of a Debian package; each finds its siblings in `dest`."""
+    asset = c.asset(platform)
+    package = fetch(asset.url, asset.sha256, cache / 'downloads', offline, mirror)
+    target = bundle / c.dest
+    target.mkdir(parents=True, exist_ok=True)
+    tool = patchelf(manifest, cache, offline, mirror)
+    with tempfile.TemporaryDirectory(dir=bundle.parent, prefix='.unpack-') as tmp:
+        tree = Path(tmp) / 'tree'
+        extract(package, tree)
+        copy_licenses(tree, c.license_files, bundle / 'licenses' / c.name)
+        for name, member in asset.files:
+            source = tree / member
+            if source.is_symlink() or not source.is_file():
+                raise InstallError(f'{c.name}: {member} is not a regular file in {asset.filename}')
+            out = target / name
+            if out.exists():
+                raise InstallError(f'{c.name}: {out} already exists')
+            shutil.copyfile(source, out)
+            out.chmod(0o644)
+            set_runpath(tool, out, '$ORIGIN')
 
 
 def _git(args: list[str], cwd: Path) -> str:
@@ -223,8 +270,12 @@ def install_pip(c: Component, manifest: Manifest, platform: Platform, bundle: Pa
 
 def install(c: Component, manifest: Manifest, platform: Platform, bundle: Path, cache: Path,
             offline: bool, mirror: Mirror | None = None) -> None:
-    if c.kind == 'archive':
-        install_archive(c, platform, bundle, cache, offline, mirror)
+    if not c.applies_to(platform):
+        print(f'  not for {platform.name}', flush=True)
+    elif c.kind == 'archive':
+        install_archive(c, manifest, platform, bundle, cache, offline, mirror)
+    elif c.kind == 'deb':
+        install_deb(c, manifest, platform, bundle, cache, offline, mirror)
     elif c.kind == 'git':
         install_git(c, bundle, cache, offline)
     elif c.kind == 'pip':

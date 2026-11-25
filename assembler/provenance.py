@@ -16,8 +16,10 @@ def toolchain_json(manifest: Manifest, platform: Platform, tag: str, source_comm
     components: dict[str, dict] = {}
     lock_sha256 = None
     for c in manifest.components:
+        if not c.applies_to(platform):
+            continue
         entry: dict = {'version': c.version, 'license': c.license}
-        if c.kind == 'archive':
+        if c.kind in ('archive', 'deb'):
             asset = c.asset(platform)
             entry.update(url=asset.url, sha256=asset.sha256)
         elif c.kind == 'git':

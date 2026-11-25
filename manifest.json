@@ -6,6 +6,25 @@
     "darwin-arm64",
     "windows-x64"
   ],
+  "patchelf": {
+    "version": "0.19.3.0",
+    "license": "GPL-3.0-or-later",
+    "homepage": "https://github.com/NixOS/patchelf",
+    "assets": {
+      "linux-x86_64": {
+        "url": "https://files.pythonhosted.org/packages/b3/d8/b261671a4064a145ae8129c5585ac79d121d852055043d03b66ee0aa4653/patchelf-0.19.3.0-py3-none-manylinux1_x86_64.manylinux_2_5_x86_64.musllinux_1_1_x86_64.whl",
+        "sha256": "1668a30fcc414debbb1604cd0a361b2f28a33a0ff6e74a74bc71766ee746e21f"
+      },
+      "linux-aarch64": {
+        "url": "https://files.pythonhosted.org/packages/3e/11/ae611ffc3ccf14bdf4baf5b22ddb853617376fe5aff132fa388bde06aad9/patchelf-0.19.3.0-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.musllinux_1_1_aarch64.whl",
+        "sha256": "3c1cde40c0c5769415c29bcb510c6e529a061f4e11c91d4d74c367bf566d1d0c"
+      },
+      "darwin-arm64": {
+        "url": "https://files.pythonhosted.org/packages/c3/6d/336e4a458bcd9465e185ad3c78d517af50a6d493561d636603571920cae7/patchelf-0.19.3.0-py3-none-macosx_10_9_universal2.whl",
+        "sha256": "2629e5caaba09fae3b577603c1729e56fe191382a8563dfa916b40167ca63045"
+      }
+    }
+  },
   "components": [
     {
       "name": "arm-none-eabi-gcc",
@@ -71,6 +90,107 @@
       ]
     },
     {
+      "name": "libusb",
+      "kind": "deb",
+      "version": "1.0.26-1",
+      "license": "LGPL-2.1-or-later",
+      "homepage": "https://libusb.info/",
+      "dest": "tools/lib",
+      "license_files": [
+        "usr/share/doc/libusb-1.0-0/copyright"
+      ],
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://snapshot.debian.org/archive/debian/20220411T030705Z/pool/main/libu/libusb-1.0/libusb-1.0-0_1.0.26-1_amd64.deb",
+          "sha256": "0a8a6c4a7d944538f2820cbde2a313f2fe6f94c21ffece9e6f372fc2ab8072e1",
+          "files": {
+            "libusb-1.0.so.0": "usr/lib/x86_64-linux-gnu/libusb-1.0.so.0.3.0"
+          }
+        },
+        "linux-aarch64": {
+          "url": "https://snapshot.debian.org/archive/debian/20220411T030705Z/pool/main/libu/libusb-1.0/libusb-1.0-0_1.0.26-1_arm64.deb",
+          "sha256": "e0648086b231c9204514d31480d517cb1b51e301ac39e69335a67d01ec785608",
+          "files": {
+            "libusb-1.0.so.0": "usr/lib/aarch64-linux-gnu/libusb-1.0.so.0.3.0"
+          }
+        }
+      }
+    },
+    {
+      "name": "libftdi1",
+      "kind": "deb",
+      "version": "1.5-6",
+      "license": "LGPL-2.1-only",
+      "homepage": "https://www.intra2net.com/en/developer/libftdi/",
+      "dest": "tools/lib",
+      "license_files": [
+        "usr/share/doc/libftdi1-2/copyright"
+      ],
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://snapshot.debian.org/archive/debian/20220915T035342Z/pool/main/libf/libftdi1/libftdi1-2_1.5-6_amd64.deb",
+          "sha256": "c347feb82647595a6722b6b53c7a9a61d368121cfa91952f8b348f737d36a033",
+          "files": {
+            "libftdi1.so.2": "usr/lib/x86_64-linux-gnu/libftdi1.so.2.5.0"
+          }
+        },
+        "linux-aarch64": {
+          "url": "https://snapshot.debian.org/archive/debian/20220915T035342Z/pool/main/libf/libftdi1/libftdi1-2_1.5-6_arm64.deb",
+          "sha256": "2681cebda15117e4df121e8823e82cbfab15dc714cbfe917bfa93308549d36a5",
+          "files": {
+            "libftdi1.so.2": "usr/lib/aarch64-linux-gnu/libftdi1.so.2.5.0"
+          }
+        }
+      }
+    },
+    {
+      "name": "hidapi",
+      "kind": "deb",
+      "version": "0.13.1-1",
+      "license": "GPL-3.0-only OR BSD-3-Clause OR LicenseRef-HIDAPI",
+      "homepage": "https://github.com/libusb/hidapi",
+      "dest": "tools/lib",
+      "license_files": [
+        "usr/share/doc/libhidapi-hidraw0/copyright"
+      ],
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://snapshot.debian.org/archive/debian/20230120T150743Z/pool/main/h/hidapi/libhidapi-hidraw0_0.13.1-1_amd64.deb",
+          "sha256": "983eee45569e22fe053d7b23c119210fd32d16213ec791dbfbd0e354d03aecfe",
+          "files": {
+            "libhidapi-hidraw.so.0": "usr/lib/x86_64-linux-gnu/libhidapi-hidraw.so.0.0.0"
+          }
+        },
+        "linux-aarch64": {
+          "url": "https://snapshot.debian.org/archive/debian/20230120T150743Z/pool/main/h/hidapi/libhidapi-hidraw0_0.13.1-1_arm64.deb",
+          "sha256": "4863f1fcc1437b9bc3d265a2064a735331f06a204fb4162a95eb34ba9e7285d4",
+          "files": {
+            "libhidapi-hidraw.so.0": "usr/lib/aarch64-linux-gnu/libhidapi-hidraw.so.0.0.0"
+          }
+        }
+      }
+    },
+    {
+      "name": "libgpiod",
+      "kind": "deb",
+      "version": "1.6.3-1",
+      "license": "LGPL-2.1-or-later",
+      "homepage": "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git",
+      "dest": "tools/lib",
+      "license_files": [
+        "usr/share/doc/libgpiod2/copyright"
+      ],
+      "assets": {
+        "linux-aarch64": {
+          "url": "https://snapshot.debian.org/archive/debian/20210911T144836Z/pool/main/libg/libgpiod/libgpiod2_1.6.3-1_arm64.deb",
+          "sha256": "445b82c40fda3852251ef990a8df4add5d2238cb5a40c2f899571266d22f8b65",
+          "files": {
+            "libgpiod.so.2": "usr/lib/aarch64-linux-gnu/libgpiod.so.2.2.2"
+          }
+        }
+      }
+    },
+    {
       "name": "picotool",
       "kind": "archive",
       "version": "2.3.1",
@@ -105,7 +225,8 @@
           "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-x64-win.zip",
           "sha256": "68730be0813f8f35be2cca147cf7f1572662d5dcf0f5ba468e02a6dd9e85db2b"
         }
-      }
+      },
+      "runpath": "$ORIGIN/../lib"
     },
     {
       "name": "pioasm",
@@ -182,7 +303,8 @@
             "scripts/target/?1879x?1?.cfg"
           ]
         }
-      }
+      },
+      "runpath": "$ORIGIN/../lib"
     },
     {
       "name": "cmake",
