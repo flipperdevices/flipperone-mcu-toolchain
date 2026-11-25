@@ -27,10 +27,6 @@ Branch from `dev` and open a pull request against it. CI does the following:
 
    If an asset has none of these, it hashes a download, and says so.
 3. Update the versions in `THIRD_PARTY.md` and `README.md`.
-   - If you bump the Pico SDK, re-check its `keep` list for `lib/btstack`: the files
-     `pico_btstack_flash_bank_headers` needs. The smoke project links that target, and in
-     its build directory `ninja -t deps | grep lib/btstack` lists the headers it used.
-   - A file in the list that is missing fails the assembly.
 4. Assemble and smoke-test locally on at least one platform. If the compiler, SDK,
    picotool or Python packages changed, also build a real project that uses them.
 

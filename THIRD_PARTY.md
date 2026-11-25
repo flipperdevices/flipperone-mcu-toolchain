@@ -13,7 +13,7 @@ License texts that ship inside an upstream archive stay in the bundle:
 | Component | Version | License | Corresponding source |
 |---|---|---|---|
 | xPack GNU Arm Embedded GCC (GCC, binutils, newlib, GDB) | 14.2.1-1.1 | GPL-3.0-or-later WITH GCC-exception-3.1, LGPL, newlib licenses | <https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/tag/v14.2.1-1.1>, which links the Arm 14.2.Rel1 sources it builds |
-| Raspberry Pi Pico SDK, with TinyUSB and three BTstack files | 2.3.1 | BSD-3-Clause; TinyUSB MIT. BTstack: `platform/embedded/hal_flash_bank.h` is BSD-3-Clause. `src/bluetooth.h` (present only because the SDK checks that it exists; never compiled) and `LICENSE` are under the BlueKitchen license, which allows personal non-commercial use only. Raspberry Pi's addendum (`pico-sdk/src/rp2_common/pico_btstack/LICENSE.RP`) covers only Pico W, Pico 2 W, RM2 and products derived from them | <https://github.com/raspberrypi/pico-sdk/tree/2.3.1> (included in the bundle as source) |
+| Raspberry Pi Pico SDK, with TinyUSB, without BTstack | 2.3.1 | BSD-3-Clause; TinyUSB MIT | <https://github.com/raspberrypi/pico-sdk/tree/2.3.1> (included in the bundle as source) |
 | picotool | 2.3.1 | BSD-3-Clause | <https://github.com/raspberrypi/picotool/tree/2.3.1> |
 | pioasm | 2.3.1 | BSD-3-Clause | <https://github.com/raspberrypi/pico-sdk/tree/2.3.1/tools/pioasm> |
 | OpenOCD, Raspberry Pi fork | 0.12.0+dev (gacff23f) | GPL-2.0-or-later | <https://github.com/raspberrypi/openocd>, built by <https://github.com/raspberrypi/pico-sdk-tools/releases/tag/v2.3.1-0> |

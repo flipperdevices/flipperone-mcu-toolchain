@@ -13,7 +13,7 @@ Docker image.
 
 The bundle contains:
 - Arm GCC 14.2.1 (xPack), with GDB (built without Python scripting)
-- Pico SDK 2.3.1, with its TinyUSB submodule and three files of BTstack (see below)
+- Pico SDK 2.3.1, with its TinyUSB submodule and without BTstack (see below)
 - picotool and pioasm 2.3.1, prebuilt
 - OpenOCD (the Raspberry Pi fork)
 - CMake and Ninja
@@ -126,15 +126,9 @@ tools/lib/                Linux only: libusb, libftdi1, hidapi (and libgpiod) fo
 licenses/  THIRD_PARTY.md
 ```
 
-`pico-sdk/lib/btstack` holds only three files:
-- `platform/embedded/hal_flash_bank.h`, which the SDK's `pico/btstack_flash_bank.h`
-  includes. It is BSD-3-Clause.
-- `src/bluetooth.h`, which the SDK only checks for, to define its `pico_btstack_*`
-  targets at all.
-- `LICENSE`.
-
-With these, `pico_btstack_flash_bank_headers` works; the smoke project uses it. The
-SDK's other BTstack targets are not usable with this bundle.
+`pico-sdk/lib/btstack` is empty: BTstack's license allows only non-commercial use outside
+Raspberry Pi's own wireless boards, and nothing the bundle builds needs it. The SDK then
+defines none of its `pico_btstack_*` targets.
 
 The layout, the variable names and the `toolchain.json` schema are a public contract.
 Changing any of them is a breaking change; see [CONTRIBUTING.md](CONTRIBUTING.md).
