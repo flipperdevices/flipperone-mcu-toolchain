@@ -5,10 +5,10 @@
 Checks, in order: the bundle is the one this repo's manifest describes and its files match
 SHA256SUMS; the env script set every variable and put each tool dir on PATH; every tool
 reports its pinned version; on Linux, the tools load the bundled USB libraries, not the
-system's; a minimal RP2350 project (tests/smoke/blink) builds using the
-prebuilt pioasm and picotool, once with the env and once with only
-cmake/initial-cache.cmake. In a container whose ENV already holds the variables, run it
-without sourcing anything.
+system's; a minimal RP2350 project (tests/smoke/blink) builds using the prebuilt pioasm
+and picotool, once with the env and once with only cmake/initial-cache.cmake, and clangd
+parses it with the bundled GCC's headers. In a container whose ENV already holds the
+variables, run it without sourcing anything.
 """
 
 from __future__ import annotations
@@ -155,8 +155,18 @@ def build_blink(root: Path, work: Path, use_env: bool) -> str:
         check(value is not None and same_path(value, root / rel), f'{name} is the bundled {rel}')
     check(not (build / 'pioasm').exists() and not (build / '_deps' / 'picotool-src').exists(),
           'pioasm and picotool were not built from source')
+    if use_env:
+        check_clangd(root, build)
     with uf2.open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def check_clangd(root: Path, build: Path) -> None:
+    """clangd reads the build's compile commands and the Arm GCC's system headers."""
+    gcc = root / 'tools' / 'arm-none-eabi-gcc' / 'bin'
+    output = run(['clangd', f'--check={BLINK / "blink.c"}', f'--compile-commands-dir={build}',
+                  f'--query-driver={gcc.as_posix()}/arm-none-eabi-*'])
+    check('All checks completed, 0 errors' in output, 'clangd parses blink.c without errors')
 
 
 def report(platform, digest: str) -> None:

@@ -27,7 +27,7 @@ License texts that ship inside an upstream archive stay in the bundle:
 | Python packages: the ones in `python/requirements-build.in` and their dependencies | see `python/requirements.lock` | MIT (ansi, black, cffi, charset-normalizer, mypy-extensions, oslex, platformdirs, pytokens, scons, setuptools, urllib3), BSD-3-Clause (click, idna, protobuf, pycparser, pyserial), BSD-2-Clause (crc), Apache-2.0 (dataclass-wizard, grpcio, grpcio-tools, mslex, requests), Apache-2.0 OR BSD-2-Clause (packaging), Apache-2.0 OR BSD-3-Clause (cryptography; its wheels include OpenSSL, Apache-2.0), MPL-2.0 (certifi, pathspec), HPND (pillow), PSF-2.0 (typing-extensions) | PyPI; each package's licence ships in its `*.dist-info` directory in the bundled interpreter |
 | uv | 0.13.7 | MIT OR Apache-2.0 | <https://github.com/astral-sh/uv/tree/0.13.7> |
 | ccache | 4.14.3 | GPL-3.0-or-later | <https://github.com/ccache/ccache/releases/tag/v4.14.3> |
-| clang-format, clang-tidy (LLVM, PyPI wheels) | 23.1.4 | Apache-2.0 WITH LLVM-exception | <https://github.com/llvm/llvm-project>; wheels from <https://github.com/ssciwr/clang-format-wheel> and <https://github.com/ssciwr/clang-tidy-wheel> |
+| clang-format, clang-tidy, clangd (LLVM, PyPI wheels) | 22.1.1, 22.1.0.1 (LLVM 22.1.0), 22.1.1 | Apache-2.0 WITH LLVM-exception | <https://github.com/llvm/llvm-project>; wheels from <https://github.com/ssciwr/clang-format-wheel>, <https://github.com/ssciwr/clang-tidy-wheel> and <https://github.com/jmpfar/clangd-wheel> |
 
 The scripts that assemble the bundle are MIT-licensed; see `licenses/LICENSE`.
 

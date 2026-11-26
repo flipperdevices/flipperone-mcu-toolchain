@@ -504,7 +504,7 @@
     {
       "name": "clang-format",
       "kind": "archive",
-      "version": "23.1.4",
+      "version": "22.1.1",
       "license": "Apache-2.0 WITH LLVM-exception",
       "homepage": "https://github.com/ssciwr/clang-format-wheel",
       "dest": "tools/clang-format",
@@ -517,34 +517,34 @@
         "args": [
           "--version"
         ],
-        "expect": "23.1.4"
+        "expect": "22.1.1"
       },
       "license_files": [
-        "clang_format-23.1.4.dist-info/licenses/*"
+        "clang_format-22.1.1.dist-info/licenses/*"
       ],
       "assets": {
         "linux-x86_64": {
-          "url": "https://files.pythonhosted.org/packages/56/93/25269be2fd50e53af60f60737906a14666c44daa64288bd0d24f33b6013e/clang_format-23.1.4-py2.py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
-          "sha256": "cef37c9b8516bacc7ce45ef7d5794c1aa7943707eb7277e7bb648f46b745d303"
+          "url": "https://files.pythonhosted.org/packages/a2/de/f323a48951815d2e8b16843bda0923f73c636a75a2408cd56fb0735171c3/clang_format-22.1.1-py2.py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "c9a4c9594693dcddc28110a40955625a6aab0d1c366a6cf16b17f0309551027c"
         },
         "linux-aarch64": {
-          "url": "https://files.pythonhosted.org/packages/c6/9e/835e20bed9fef947d70129ac33d8a8ce2aa838bc300a9aa8d2fbe64e7b3a/clang_format-23.1.4-py2.py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
-          "sha256": "0fec4dcb7de29469d29deef39f4818a88ea230d6019870927e9235ce8f7b06bb"
+          "url": "https://files.pythonhosted.org/packages/dd/15/b61286c041e553ad02c1284dd5775e0d10b59ced1c1125920594311bde6d/clang_format-22.1.1-py2.py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
+          "sha256": "3bb16f36ef6b84a7b890ebd4fddedc5d18f8d7485168169c1f5f61ed8e3099ae"
         },
         "darwin-arm64": {
-          "url": "https://files.pythonhosted.org/packages/e6/72/2839b6bb6fe39a79a06613e4f4bf88fe7c82d52db7e77bfbed9f4d755325/clang_format-23.1.4-py2.py3-none-macosx_11_0_arm64.whl",
-          "sha256": "67fac45d8b5cfecf60bb25d83e479ad110efdbd7e8fda41042a808053ca20481"
+          "url": "https://files.pythonhosted.org/packages/1b/c8/1e0dcf0cb4e66b08fb8f54107d351a4c9e459c7482ca0256e5dafc64167c/clang_format-22.1.1-py2.py3-none-macosx_11_0_arm64.whl",
+          "sha256": "346c2b424ebf7d58962a09ae497bc93b12c335a7e2f003cd596d8a9a468398c3"
         },
         "windows-x64": {
-          "url": "https://files.pythonhosted.org/packages/82/c2/a32b7ed0d037d3fc497f494808d3926f050fa3c7145a2205ee51086d5c90/clang_format-23.1.4-py2.py3-none-win_amd64.whl",
-          "sha256": "bd372a6c247c22b5d7a5a748aa66b88476aec946bd8e644f8a68b990c90714a8"
+          "url": "https://files.pythonhosted.org/packages/90/cf/438675e6cea4a5754a763f73d7628ea1c7a30e48f83f691e88f847d70ad4/clang_format-22.1.1-py2.py3-none-win_amd64.whl",
+          "sha256": "8109b43a3c352b5c8eadf73cd2b7fb7868d28db22aaf1ad3de6933d23a20eae7"
         }
       }
     },
     {
       "name": "clang-tidy",
       "kind": "archive",
-      "version": "23.1.4",
+      "version": "22.1.0.1",
       "license": "Apache-2.0 WITH LLVM-exception",
       "homepage": "https://github.com/ssciwr/clang-tidy-wheel",
       "dest": "tools/clang-tidy",
@@ -557,27 +557,67 @@
         "args": [
           "--version"
         ],
-        "expect": "23.1.4"
+        "expect": "22.1.0"
       },
       "license_files": [
-        "clang_tidy-23.1.4.dist-info/licenses/*"
+        "clang_tidy-22.1.0.1.dist-info/licenses/*"
       ],
       "assets": {
         "linux-x86_64": {
-          "url": "https://files.pythonhosted.org/packages/80/85/9b483f300124a9245ec6da8975612f1841e26da13b27ad8d17f2006e13bd/clang_tidy-23.1.4-py2.py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
-          "sha256": "6bb31e4f319ecbe14acb75f23c3050d0f1d4b1d92ea1c66091bc76e4eac2c1ac"
+          "url": "https://files.pythonhosted.org/packages/5b/03/5019fb4b675d06058149b551133598d52b16d63799a2616bc4c11d15653f/clang_tidy-22.1.0.1-py2.py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "147f65292ef4bc27642bc4fe7330c47ff2eb7687eedf29ce2600b202f8cd54b6"
         },
         "linux-aarch64": {
-          "url": "https://files.pythonhosted.org/packages/7d/95/ba9463f94319dddd0c3a9d3f65d432ddf71fe9b203dcd7ea63bcff8999e2/clang_tidy-23.1.4-py2.py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
-          "sha256": "87596cd77dedfdea23ced1d13e57e869dcaee99745bfe942796196da3c197671"
+          "url": "https://files.pythonhosted.org/packages/88/91/0d0d7fcc11c8d26207f4d9628032a6fc5f93c365c78a3f2224e291cfe5c6/clang_tidy-22.1.0.1-py2.py3-none-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl",
+          "sha256": "f6c9fd547af8cd78961ccc42bdf4ebfa8e8ee1a7091ab1ea18f8756ac974082d"
         },
         "darwin-arm64": {
-          "url": "https://files.pythonhosted.org/packages/0c/59/637ce45a6cfa15ddb926e1feeee8077b9ebeb2956548375f24e16d51a908/clang_tidy-23.1.4-py2.py3-none-macosx_11_0_arm64.whl",
-          "sha256": "08e977575e9f800c1c806f2001a3cdfd01323491aec05e86dd24be9a5c2585f4"
+          "url": "https://files.pythonhosted.org/packages/c3/ff/a8f501f2a9dc65e698b914c65a90a4235fe08d4159ecf88036f39a3e6d66/clang_tidy-22.1.0.1-py2.py3-none-macosx_11_0_arm64.whl",
+          "sha256": "6449aa689ecca34bf12159194fa82d0fe90a2766398065b00cf8743c4176bd20"
         },
         "windows-x64": {
-          "url": "https://files.pythonhosted.org/packages/c0/49/b2adbdedbe430d0cce9b354a679d57e28692ce2fb59a575486784d438125/clang_tidy-23.1.4-py2.py3-none-win_amd64.whl",
-          "sha256": "8107e05930f53dc477dbb5fb8108d7c10464176fc95d3e58f4ee7317887aed59"
+          "url": "https://files.pythonhosted.org/packages/f6/5b/b5e5a286ff06111158f769892c56bf811806bd4d4d5aba93960b9c835e31/clang_tidy-22.1.0.1-py2.py3-none-win_amd64.whl",
+          "sha256": "e9f1e762afe3f5f3511ca7f50132d4d6d5c58a3f6760089ed45d2b3506cf7d07"
+        }
+      }
+    },
+    {
+      "name": "clangd",
+      "kind": "archive",
+      "version": "22.1.1",
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "homepage": "https://github.com/jmpfar/clangd-wheel",
+      "dest": "tools/clangd",
+      "root": "clangd/data",
+      "path": [
+        "bin"
+      ],
+      "exe": "bin/clangd",
+      "check": {
+        "args": [
+          "--version"
+        ],
+        "expect": "22.1.1"
+      },
+      "license_files": [
+        "clangd-22.1.1.dist-info/licenses/*"
+      ],
+      "assets": {
+        "linux-x86_64": {
+          "url": "https://files.pythonhosted.org/packages/9d/90/7febb5da8fe7130772f2d881aa69b806fabb4655da384b9aff9735b20fd2/clangd-22.1.1-py2.py3-none-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "861ccf58c143bcfcb3afd23c1e6c5d09144d3d634152221065d84102dfc35d4a"
+        },
+        "linux-aarch64": {
+          "url": "https://files.pythonhosted.org/packages/ff/6e/bb87d4ebf958b63d0a1a1bc148c013d9b5471211eff75cc49681034b8842/clangd-22.1.1-py2.py3-none-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+          "sha256": "672338afbbb5989b66cd0c1354eb2406f77fdc2a97d5b594ee8dd26c745b250f"
+        },
+        "darwin-arm64": {
+          "url": "https://files.pythonhosted.org/packages/da/78/c231701a2a90c332608f792427aa6deddc1c7fcea2c7feba5fcab1bb2312/clangd-22.1.1-py2.py3-none-macosx_11_0_arm64.whl",
+          "sha256": "1e11c1797f57b74e834afbdb6b9b87695d4ef239109a94885d267d3596eafd67"
+        },
+        "windows-x64": {
+          "url": "https://files.pythonhosted.org/packages/6e/1a/2a3ad71897b255238022305168e472c2187850dd61163efc1620cbd936e4/clangd-22.1.1-py2.py3-none-win_amd64.whl",
+          "sha256": "88f3a1b28cba6a714e97cf74ae749eb2f965bfd24e69fa17e8f0b6dba67cfee6"
         }
       }
     }

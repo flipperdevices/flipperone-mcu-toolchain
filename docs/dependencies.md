@@ -51,6 +51,8 @@ Use only upstream releases that are at least two weeks old.
   - Set `runpath` on the binary, so it loads them from `tools/lib`.
   - The smoke test's `ldd` check fails if a library is missing or comes from the system.
 - **patchelf:** bump `patchelf.version` and its three wheel URLs, then run `pin`.
+- **clang-format, clang-tidy, clangd:** keep them on one LLVM release. When a wheel for
+  that exact version is missing, take the closest one available.
 
 ## `manifest.json` reference
 

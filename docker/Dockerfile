@@ -54,7 +54,7 @@ ENV FLIPPERONE_TOOLCHAIN=${TOOLCHAIN_TAG} \
     pioasm_DIR=/opt/flipperone-mcu-toolchain/tools/pioasm \
     OPENOCD_SCRIPTS=/opt/flipperone-mcu-toolchain/tools/openocd/scripts \
     PYTHONNOUSERSITE=1 \
-    PATH=/opt/flipperone-mcu-toolchain/tools/arm-none-eabi-gcc/bin:/opt/flipperone-mcu-toolchain/tools/picotool:/opt/flipperone-mcu-toolchain/tools/pioasm:/opt/flipperone-mcu-toolchain/tools/openocd:/opt/flipperone-mcu-toolchain/tools/cmake/bin:/opt/flipperone-mcu-toolchain/tools/ninja/bin:/opt/flipperone-mcu-toolchain/tools/python/bin:/opt/flipperone-mcu-toolchain/tools/uv:/opt/flipperone-mcu-toolchain/tools/ccache:/opt/flipperone-mcu-toolchain/tools/clang-format/bin:/opt/flipperone-mcu-toolchain/tools/clang-tidy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    PATH=/opt/flipperone-mcu-toolchain/tools/arm-none-eabi-gcc/bin:/opt/flipperone-mcu-toolchain/tools/picotool:/opt/flipperone-mcu-toolchain/tools/pioasm:/opt/flipperone-mcu-toolchain/tools/openocd:/opt/flipperone-mcu-toolchain/tools/cmake/bin:/opt/flipperone-mcu-toolchain/tools/ninja/bin:/opt/flipperone-mcu-toolchain/tools/python/bin:/opt/flipperone-mcu-toolchain/tools/uv:/opt/flipperone-mcu-toolchain/tools/ccache:/opt/flipperone-mcu-toolchain/tools/clang-format/bin:/opt/flipperone-mcu-toolchain/tools/clang-tidy/bin:/opt/flipperone-mcu-toolchain/tools/clangd/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 USER builder
 WORKDIR /home/builder

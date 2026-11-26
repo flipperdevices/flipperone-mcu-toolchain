@@ -20,7 +20,7 @@ The bundle contains:
 - Python 3.12, with packages already installed: pillow, protobuf, grpcio-tools, cryptography, pyserial, black, ansi, certifi, crc, dataclass-wizard, requests, scons, urllib3 and oslex (see [python/README.md](python/README.md))
   (bundles protoc)
 - uv and ccache
-- clang-format and clang-tidy
+- clang-format, clang-tidy and clangd, on the same LLVM release where wheels allow
 
 [`manifest.json`](manifest.json) pins every component by URL and sha256, and
 [THIRD_PARTY.md](THIRD_PARTY.md) lists their licenses.
@@ -121,7 +121,7 @@ fbtenv.sh | fbtenv.ps1, fbtenv.cmd
 cmake/initial-cache.cmake
 pico-sdk/
 tools/<component>/        arm-none-eabi-gcc, picotool, pioasm, openocd, cmake, ninja,
-                          python, uv, ccache, clang-format, clang-tidy
+                          python, uv, ccache, clang-format, clang-tidy, clangd
 tools/lib/                Linux only: libusb, libftdi1, hidapi (and libgpiod) for picotool and OpenOCD
 licenses/  THIRD_PARTY.md
 ```

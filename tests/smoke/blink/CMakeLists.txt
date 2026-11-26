@@ -1,6 +1,7 @@
 # Minimal RP2350 project for the bundle smoke test. It exercises the Arm GCC toolchain,
 # the Pico SDK with TinyUSB (USB stdio), pioasm (a PIO program) and picotool (UF2 output).
 cmake_minimum_required(VERSION 3.13)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)  # for the clangd check
 
 if(NOT PICO_SDK_PATH)
     set(PICO_SDK_PATH "$ENV{PICO_SDK_PATH}")
