@@ -74,7 +74,7 @@ Use only upstream releases that are at least two weeks old.
 | `license_files` | Optional. fnmatch patterns, relative to the unpacked source, copied to `licenses/<name>/`. Each must match a file. |
 | `path`, `path_windows` | Optional. Directories under `dest` added to PATH, in manifest order; `.` is `dest` itself. `path_windows` replaces `path` on Windows. |
 | `exe` | Optional. Main executable under `dest`, as `"bin/x"` or `{"unix": …, "windows": …}`; `.exe` is added on Windows. |
-| `check` | `{args, expect}`. The smoke test runs `exe` (for `pip`, the interpreter) with `args` and looks for `expect` in the output. Required with `exe` and for `pip`. |
+| `check` | `{args, expect}`, optionally `script`: a file in this repository, run before `args`. The smoke test runs `exe` (for `pip`, the interpreter) and looks for `expect` in the output; a non-zero exit fails too. Required with `exe` and for `pip`. |
 
 **Per kind:**
 

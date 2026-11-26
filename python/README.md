@@ -7,6 +7,7 @@ platform.
 | --- | --- |
 | `requirements-build.in` | The packages projects use directly, each pinned with `==` and a short comment on what it is for. Edit this file. |
 | `requirements.lock` | Generated. Every package, dependencies included, with sha256 hashes for every platform. Never edit by hand. |
+| `check_packages.py` | The smoke test runs it with the bundled interpreter. Every locked package must be installed at its locked version, and every package in the `.in` file must import. |
 
 The assembler installs the lock with `pip --only-binary=:all: --no-deps --require-hashes`.
 Console scripts are dropped, so packages run as `python -m <module>`.
@@ -40,9 +41,9 @@ Console scripts are dropped, so packages run as `python -m <module>`.
    - To refresh everything, use today minus 14 days.
 
    In the lock's diff, check that only the packages you meant to change moved.
-4. **Update the version check:** the `check` of the `python-packages` component in
-   `manifest.json`. Import the new module and print its version. Put the expected
-   output in `expect`.
+4. **Check the import:** if the package's module is not its name with `-` as `_`
+   (`pyserial` is `serial`), add it to `IMPORTS` in `check_packages.py`. Versions need no
+   edit there: the script reads them from the lock.
 5. **Update the docs:** the package list in `README.md`, and the Python packages row in
    `THIRD_PARTY.md`, with the licence of every new package in the lock.
 6. **Test:** assemble and smoke-test locally (see CONTRIBUTING.md), then open a pull

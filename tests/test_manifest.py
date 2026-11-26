@@ -77,6 +77,8 @@ def test_every_tool_has_a_version_check(data):
     (lambda d: tool(d, 'pico-sdk').update(runpath='$ORIGIN'), 'runpath needs an archive component'),
     (lambda d: d.pop('patchelf'), 'runpath needs a patchelf pin'),
     (lambda d: d['patchelf']['assets']['linux-x86_64'].update(sha256='x'), 'patchelf/linux-x86_64: sha256'),
+    (lambda d: tool(d, 'python-packages')['check'].update(script='python/nope.py'), 'check script missing'),
+    (lambda d: tool(d, 'cmake')['check'].update(expect=''), 'check needs a non-empty expect'),
 ])
 def test_validate_rejects(data, mutate, message):
     broken = copy.deepcopy(data)

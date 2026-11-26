@@ -182,6 +182,14 @@ def validate(data: dict) -> list[str]:
                 errors.append(f'{where}: dest {dest} overlaps another component')
             else:
                 dests[dest] = kind
+        check = c.get('check')
+        if check is not None:
+            if not isinstance(check, dict) or not isinstance(check.get('expect'), str) or not check['expect']:
+                errors.append(f'{where}: check needs a non-empty expect')
+            elif 'script' in check:
+                script = check['script']
+                if not _rel_path_ok(script) or not (REPO_ROOT / script).is_file():
+                    errors.append(f'{where}: check script missing')
         if 'runpath' in c:
             if kind != 'archive' or 'exe' not in c:
                 errors.append(f'{where}: runpath needs an archive component with exe')

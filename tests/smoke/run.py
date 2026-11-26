@@ -103,7 +103,8 @@ def check_tools(root: Path, mf: manifest.Manifest, platform) -> None:
         if c.kind != 'pip':
             found = shutil.which(Path(rel).name)
             check(found is not None and same_path(found, exe), f'{Path(rel).name} on PATH is the bundled one')
-        output = run([exe, *spec['args']])
+        script = [REPO / spec['script']] if 'script' in spec else []
+        output = run([exe, *script, *spec.get('args', [])])
         check(spec['expect'] in output, f'{c.name}: output contains {spec["expect"]!r}')
 
 
