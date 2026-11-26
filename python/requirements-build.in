@@ -1,6 +1,15 @@
 # Python packages installed into the bundled interpreter. See python/README.md.
-pillow==12.2.0        # image conversion
-protobuf==7.35.1      # protobuf code generation, with grpcio-tools
-grpcio-tools==1.83.0  # bundles protoc, so no system protoc is needed
-cryptography==50.0.2  # signing and encryption (cryptography.hazmat)
-pyserial==3.5         # serial consoles
+pillow==12.2.0            # image conversion
+protobuf==7.35.1          # protobuf code generation, with grpcio-tools
+grpcio-tools==1.83.0      # bundles protoc, so no system protoc is needed
+cryptography==50.0.2      # signing and encryption (cryptography.hazmat)
+pyserial==3.5             # serial consoles
+black==26.10.1            # Python formatting
+ansi==0.3.7               # terminal colours
+certifi==2026.10.23       # CA bundle for HTTPS
+crc==8.0.0                # CRC calculation
+dataclass-wizard==1.0.0   # dataclass (de)serialisation
+requests==2.34.2          # HTTP client
+scons==4.11.1             # build tool (python -m SCons)
+urllib3==2.8.0            # HTTP, also used by requests
+oslex==2.0.0              # shell quoting for the host OS

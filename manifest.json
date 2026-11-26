@@ -424,9 +424,9 @@
       "check": {
         "args": [
           "-c",
-          "import PIL, google.protobuf, grpc_tools.protoc, cryptography, serial; from cryptography.hazmat.primitives import hashes; print(PIL.__version__, google.protobuf.__version__, cryptography.__version__, serial.__version__)"
+          "import PIL, google.protobuf, grpc_tools.protoc, cryptography.hazmat.primitives.hashes, serial, black, ansi, certifi, crc, dataclass_wizard, requests, SCons, urllib3, oslex; from importlib.metadata import version; print(' '.join(version(d) for d in ['pillow', 'protobuf', 'grpcio-tools', 'cryptography', 'pyserial', 'black', 'ansi', 'certifi', 'crc', 'dataclass-wizard', 'requests', 'scons', 'urllib3', 'oslex']))"
         ],
-        "expect": "12.2.0 7.35.1 50.0.2 3.5"
+        "expect": "12.2.0 7.35.1 1.83.0 50.0.2 3.5 26.10.1 0.3.7 2026.10.23 8.0.0 1.0.0 2.34.2 4.11.1 2.8.0 2.0.0"
       }
     },
     {
