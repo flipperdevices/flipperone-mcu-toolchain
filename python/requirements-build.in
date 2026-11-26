@@ -1,8 +1,6 @@
-# Build-time Python packages installed into the bundled interpreter: image conversion
-# (pillow) and protobuf code generation (protobuf, grpcio-tools for protoc). Changing
-# them needs a toolchain release. Regenerate the lock with:
-#   uv pip compile python/requirements-build.in --universal --python-version 3.12 \
-#     --generate-hashes --exclude-newer <date two weeks ago> -o python/requirements.lock
-pillow==12.2.0
-protobuf==7.35.1
+# Python packages installed into the bundled interpreter. See python/README.md.
+pillow==12.2.0        # image conversion
+protobuf==7.35.1      # protobuf code generation, with grpcio-tools
 grpcio-tools==1.83.0  # bundles protoc, so no system protoc is needed
+cryptography==50.0.2  # signing and encryption (cryptography.hazmat)
+pyserial==3.5         # serial consoles

@@ -7,30 +7,12 @@ Branch from `dev` and open a pull request against it. CI does the following:
 - builds the Docker image for both architectures
 - smoke-tests the Docker image as its non-root user, using only the image's `ENV`
 
-## Bumping a component
+## Updating dependencies
 
-1. Edit the component in `manifest.json`: `version`, the asset URLs, any `root` or
-   `license_files` that changed, and the `check.expect` string.
-2. Clear the old hashes (`"sha256": ""`; for the Pico SDK, `"commit": ""`), then fill them
-   from upstream metadata:
+- Python packages: [python/README.md](python/README.md).
+- Everything else, and the `manifest.json` reference: [docs/dependencies.md](docs/dependencies.md).
 
-   ```shell
-   GITHUB_TOKEN=$(gh auth token) python3 -m assembler.pin --write
-   python3 -m assembler.pin    # every line must say ok
-   ```
-
-   `assembler.pin` reads, in this order of preference:
-   - the digest GitHub records for each release asset
-   - xPack's `.sha` files
-   - PyPI's digests
-   - `git ls-remote`
-
-   If an asset has none of these, it hashes a download, and says so.
-3. Update the versions in `THIRD_PARTY.md` and `README.md`.
-4. Assemble and smoke-test locally on at least one platform. If the compiler, SDK,
-   picotool or Python packages changed, also build a real project that uses them.
-
-Use only releases that are at least two weeks old.
+A project that needs a changed dependency needs a toolchain release first.
 
 ## Releasing
 
@@ -59,20 +41,6 @@ The weekly Upstream workflow, which can also be run by hand, does two things:
 - runs `python3 -m assembler.mirror`. It uploads every pinned archive that is not yet in
   the `mirror` release, as `<sha256>-<file name>`. Mirror assets are never deleted,
   because old tags may need them.
-
-## Python build packages
-
-`python/requirements-build.in` holds the build-time Python packages that projects built
-with the bundle need.
-`python/requirements.lock` pins them, with hashes for every platform.
-
-**A project that needs a different package needs a toolchain release first.** Change
-the `.in` file, then regenerate the lock:
-
-```shell
-uv pip compile python/requirements-build.in --universal --python-version 3.12 \
-  --generate-hashes --exclude-newer <date two weeks ago> -o python/requirements.lock
-```
 
 ## The bundle contract
 

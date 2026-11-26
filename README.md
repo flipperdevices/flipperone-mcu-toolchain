@@ -17,7 +17,7 @@ The bundle contains:
 - picotool and pioasm 2.3.1, prebuilt
 - OpenOCD (the Raspberry Pi fork)
 - CMake and Ninja
-- Python 3.12, with build packages already installed: pillow, protobuf, and grpcio-tools
+- Python 3.12, with packages already installed: pillow, protobuf, grpcio-tools, cryptography and pyserial (see [python/README.md](python/README.md))
   (bundles protoc)
 - uv and ccache
 - clang-format and clang-tidy

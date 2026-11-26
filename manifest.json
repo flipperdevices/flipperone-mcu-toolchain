@@ -424,9 +424,9 @@
       "check": {
         "args": [
           "-c",
-          "import PIL, google.protobuf, grpc_tools.protoc; print(PIL.__version__, google.protobuf.__version__)"
+          "import PIL, google.protobuf, grpc_tools.protoc, cryptography, serial; from cryptography.hazmat.primitives import hashes; print(PIL.__version__, google.protobuf.__version__, cryptography.__version__, serial.__version__)"
         ],
-        "expect": "12.2.0 7.35.1"
+        "expect": "12.2.0 7.35.1 50.0.2 3.5"
       }
     },
     {

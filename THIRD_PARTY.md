@@ -24,7 +24,7 @@ License texts that ship inside an upstream archive stay in the bundle:
 | xPack CMake | 3.31.9-1 | BSD-3-Clause | <https://github.com/xpack-dev-tools/cmake-xpack/releases/tag/v3.31.9-1> |
 | xPack Ninja | 1.13.1-1 | Apache-2.0 | <https://github.com/xpack-dev-tools/ninja-build-xpack/releases/tag/v1.13.1-1> |
 | CPython (python-build-standalone) | 3.12.16 (20261026) | PSF-2.0 and the licenses of its bundled libraries | <https://github.com/astral-sh/python-build-standalone/releases/tag/20261026> |
-| Python build packages: pillow, protobuf, grpcio-tools, grpcio, setuptools, typing-extensions | see `python/requirements.lock` | HPND (pillow), BSD-3-Clause (protobuf), Apache-2.0 (grpcio, grpcio-tools), MIT (setuptools), PSF-2.0 (typing-extensions) | PyPI; each package's licence ships in its `*.dist-info` directory in the bundled interpreter |
+| Python build packages: pillow, protobuf, grpcio-tools, grpcio, cryptography, cffi, pycparser, pyserial, setuptools, typing-extensions | see `python/requirements.lock` | HPND (pillow), BSD-3-Clause (protobuf, pycparser, pyserial), Apache-2.0 (grpcio, grpcio-tools), Apache-2.0 OR BSD-3-Clause (cryptography; its wheels include OpenSSL, Apache-2.0), MIT (cffi, setuptools), PSF-2.0 (typing-extensions) | PyPI; each package's licence ships in its `*.dist-info` directory in the bundled interpreter |
 | uv | 0.13.7 | MIT OR Apache-2.0 | <https://github.com/astral-sh/uv/tree/0.13.7> |
 | ccache | 4.14.3 | GPL-3.0-or-later | <https://github.com/ccache/ccache/releases/tag/v4.14.3> |
 | clang-format, clang-tidy (LLVM, PyPI wheels) | 23.1.4 | Apache-2.0 WITH LLVM-exception | <https://github.com/llvm/llvm-project>; wheels from <https://github.com/ssciwr/clang-format-wheel> and <https://github.com/ssciwr/clang-tidy-wheel> |
