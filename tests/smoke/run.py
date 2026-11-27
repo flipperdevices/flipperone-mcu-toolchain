@@ -170,8 +170,10 @@ def build_blink(root: Path, work: Path, use_env: bool) -> str:
 def check_clangd(root: Path, build: Path) -> None:
     """clangd reads the build's compile commands and the Arm GCC's system headers."""
     gcc = root / 'tools' / 'arm-none-eabi-gcc' / 'bin'
+    # Any name in that directory: with a space in its path, CMake on Windows records the
+    # compiler by its 8.3 short name (ARxxxx~1.EXE), which 'arm-none-eabi-*' misses
     output = run(['clangd', f'--check={BLINK / "blink.c"}', f'--compile-commands-dir={build}',
-                  f'--query-driver={gcc.as_posix()}/arm-none-eabi-*'])
+                  f'--query-driver={gcc.as_posix()}/*'])
     check('All checks completed, 0 errors' in output, 'clangd parses blink.c without errors')
 
 
