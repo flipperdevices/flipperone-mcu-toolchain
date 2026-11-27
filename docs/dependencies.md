@@ -70,7 +70,7 @@ Use only upstream releases that are at least two weeks old.
 | Key | Meaning |
 | --- | --- |
 | `name` | Unique. Becomes `licenses/<name>/`, and the key in the bundle's and the release's `toolchain.json` / `release.json`. |
-| `kind` | `archive`, `git`, `pip` or `deb` |
+| `kind` | `archive`, `git`, `pip`, `deb` or `files` |
 | `version`, `license`, `homepage` | Recorded in the bundle and the release. `license` is an SPDX expression; `homepage` must be https. |
 | `dest` | Install directory under the bundle root: relative and POSIX. Not for `pip`. Must not overlap another component's, except that `deb` components share one. |
 | `license_files` | Optional. fnmatch patterns, relative to the unpacked source, copied to `licenses/<name>/`. Each must match a file. |
@@ -86,5 +86,6 @@ Use only upstream releases that are at least two weeks old.
 | `git` | `url`, `ref` (the tag), `commit` (full sha1). Optional: `submodules`, `{path: commit}`, which checks out only these; `keep`, `{submodule path: [files]}`, which keeps only those files. |
 | `pip` | `interpreter`: the name of an earlier component. `requirements`: the lock file. |
 | `deb` | `assets`: per Linux platform, `{url, sha256, files}`, where `files` maps an installed soname to its path in the package (`usr/lib/<triplet>/lib….so.N.M`). Installed only on the listed platforms. Each file gets RUNPATH `$ORIGIN`. |
+| `files` | No `dest`. `assets`: per platform, `{url, sha256, files}`, where `files` maps a bundle path inside an earlier component to a member of the package. Installed only on the listed platforms. Used for the Microsoft C++ runtime next to the clang tools on Windows. |
 
 `assembler/manifest.py` validates all of this, and `tests/test_manifest.py` runs it.

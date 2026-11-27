@@ -110,3 +110,34 @@ def test_deb_components_are_skipped_off_linux(tmp_path, fake_tools):
     mf = manifest.load()
     components.install(mf.component('libusb'), mf, PLATFORMS['darwin-arm64'], tmp_path, tmp_path, offline=True)
     assert list(tmp_path.iterdir()) == []
+
+
+def test_install_files_puts_the_runtime_next_to_each_tool(tmp_path, fake_tools):
+    import zipfile
+    served, _ = fake_tools
+    mf = manifest.load()
+    c = mf.component('msvc-runtime-arm64')
+    platform = PLATFORMS['windows-arm64']
+    asset = c.asset(platform)
+    wheel = tmp_path / 'rt.whl'
+    with zipfile.ZipFile(wheel, 'w') as zf:
+        for member in sorted({member for _, member in asset.files}):
+            zf.writestr(member, member.rsplit('/', 1)[-1])
+        zf.writestr(c.license_files[0], 'license')
+    served[asset.url] = wheel
+    bundle = tmp_path / 'bundle'
+    for target, _ in asset.files:
+        (bundle / target).parent.mkdir(parents=True, exist_ok=True)
+    components.install(c, mf, platform, bundle, tmp_path / 'cache', offline=True)
+    for target, member in asset.files:
+        assert (bundle / target).read_text() == member.rsplit('/', 1)[-1]
+    assert (bundle / 'licenses' / c.name / c.license_files[0]).read_text() == 'license'
+    with pytest.raises(components.InstallError, match='already exists'):
+        components.install(c, mf, platform, bundle, tmp_path / 'cache', offline=True)
+
+
+def test_files_components_are_skipped_where_not_listed(tmp_path, fake_tools):
+    mf = manifest.load()
+    components.install(mf.component('msvc-runtime-arm64'), mf, PLATFORMS['windows-x64'], tmp_path, tmp_path,
+                       offline=True)
+    assert list(tmp_path.iterdir()) == []

@@ -83,6 +83,8 @@ chooses its own toolchain file.
 - **Windows:** keep the bundle path short, for example under `%LOCALAPPDATA%`.
   - Loading BOOTSEL devices with picotool needs the WinUSB driver (use Zadig).
   - OpenOCD over CMSIS-DAP needs no driver.
+  - No Visual C++ Redistributable is needed: the clang tools carry the Microsoft C++
+    runtime DLLs next to them.
   - **Windows on Arm:** OpenOCD, CMake, uv, ccache, clangd and clang-format are native arm64.
     Arm GCC, picotool, pioasm, Ninja, clang-tidy and Python with its packages are the x64
     builds, which Windows runs by emulation: upstream ships no arm64 build of them, or of

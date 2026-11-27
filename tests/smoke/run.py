@@ -134,6 +134,22 @@ def check_libraries(root: Path, mf: manifest.Manifest, platform) -> None:
               f'{c.name}: {", ".join(used)} from the bundle')
 
 
+def check_signatures(root: Path, mf: manifest.Manifest, platform) -> None:
+    """DLLs that files components bring in carry a valid Microsoft Authenticode signature."""
+    print('[signatures]')
+    for c in mf.components:
+        if c.kind != 'files' or not c.applies_to(platform):
+            continue
+        for target, _ in c.asset(platform).files:
+            path = root / target
+            script = ("$s = Get-AuthenticodeSignature -LiteralPath $env:FO_SIGNED; "
+                      "\"$($s.Status)|$($s.SignerCertificate.Subject)\"")
+            output = subprocess.run(['powershell', '-NoProfile', '-Command', script], capture_output=True,
+                                    text=True, env={**os.environ, 'FO_SIGNED': str(path)}).stdout.strip()
+            status, _, subject = output.partition('|')
+            check(status == 'Valid' and 'O=Microsoft Corporation' in subject, f'{target}: signed by Microsoft')
+
+
 def cache_value(build: Path, name: str) -> str | None:
     for line in (build / 'CMakeCache.txt').read_text().splitlines():
         if line.startswith(name + ':'):
@@ -213,6 +229,8 @@ def main(argv: list[str] | None = None) -> int:
     check_tools(root, mf, platform)
     if platform.os == 'linux':
         check_libraries(root, mf, platform)
+    if platform.windows:
+        check_signatures(root, mf, platform)
     with tempfile.TemporaryDirectory(prefix='fo-smoke-') as tmp:
         work = args.work.resolve() if args.work else Path(tmp)
         work.mkdir(parents=True, exist_ok=True)

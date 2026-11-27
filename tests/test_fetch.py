@@ -87,7 +87,7 @@ def test_token_is_sent_only_to_the_github_api(monkeypatch):
 def test_mirror_wants_every_archive_deb_and_patchelf_asset_under_a_unique_name():
     mf = manifest.load()
     names = mirror.wanted(mf)
-    expected = sum(len(c.all_assets()) for c in mf.components if c.kind in ('archive', 'deb'))
+    expected = sum(len(c.all_assets()) for c in mf.components if c.kind in ('archive', 'deb', 'files'))
     expected += len(mf.patchelf['assets'])
     assert len(names) == expected
     assert all(name.split('-', 1)[0] == sha for name, (_, sha) in names.items())

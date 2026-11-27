@@ -83,6 +83,11 @@ def test_every_tool_has_a_version_check(data):
     (lambda d: tool(d, 'ninja')['assets'].update({'windows-arm64': {'same_as': 'beos-m68k'}}), 'same_as'),
     (lambda d: tool(d, 'ninja')['assets']['windows-arm64'].update(url='https://x/y'), 'same_as'),
     (lambda d: tool(d, 'ninja')['assets'].update({'windows-x64': {'same_as': 'windows-arm64'}}), 'same_as'),
+    (lambda d: tool(d, 'msvc-runtime-x64')['assets']['windows-x64']['files'].update({'tools/nope/x.dll': 'a/x.dll'}),
+     'not inside an earlier component'),
+    (lambda d: tool(d, 'msvc-runtime-x64')['assets']['windows-x64']['files'].update({'tools/clangd/x.dll': '../x'}),
+     'bad file'),
+    (lambda d: tool(d, 'msvc-runtime-x64')['assets']['windows-x64'].pop('files'), 'files missing'),
 ])
 def test_validate_rejects(data, mutate, message):
     broken = copy.deepcopy(data)

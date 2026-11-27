@@ -27,7 +27,7 @@ MANIFEST = REPO_ROOT / 'manifest.json'
 
 SHA256_RE = re.compile(r'[0-9a-f]{64}')
 COMMIT_RE = re.compile(r'[0-9a-f]{40}')
-KINDS = ('archive', 'git', 'pip', 'deb')
+KINDS = ('archive', 'git', 'pip', 'deb', 'files')
 LINUX_PLATFORMS = ('linux-x86_64', 'linux-aarch64')
 SONAME_RE = re.compile(r'lib[A-Za-z0-9_.+-]+\.so(\.[0-9]+)*')
 
@@ -42,7 +42,7 @@ class Asset:
     sha256: str
     root: str | None = None  # path inside the archive to install; None = auto-detect
     exclude: tuple[str, ...] = ()  # archive members to skip (fnmatch patterns)
-    files: tuple[tuple[str, str], ...] = ()  # deb: (installed name, member path)
+    files: tuple[tuple[str, str], ...] = ()  # deb: (installed name, member); files: (bundle path, member)
 
     @property
     def filename(self) -> str:
@@ -72,12 +72,16 @@ class Component:
                      exclude=tuple(spec.get('exclude', ())), files=tuple(sorted(spec.get('files', {}).items())))
 
     def applies_to(self, platform: Platform) -> bool:
-        """Whether this component goes into the platform's bundle (deb: only where listed)."""
-        return self.kind != 'deb' or platform.name in self.raw['assets']
+        """Whether this component goes into the platform's bundle (deb, files: only where listed)."""
+        return self.kind not in ('deb', 'files') or platform.name in self.raw['assets']
 
     def all_assets(self) -> list[Asset]:
         """Every asset of an archive or deb component, one per platform key (or "any")."""
-        return [self._asset(spec) for spec in self.raw.get('assets', {}).values() if 'same_as' not in spec]
+        unique = {}
+        for spec in self.raw.get('assets', {}).values():
+            if 'same_as' not in spec:
+                unique.setdefault((spec['url'], spec['sha256']), self._asset(spec))
+        return list(unique.values())
 
     def exe(self, platform: Platform) -> str | None:
         """Main executable, relative to the bundle root."""
@@ -174,7 +178,7 @@ def validate(data: dict) -> list[str]:
         if not str(c.get('homepage', '')).startswith('https://'):
             errors.append(f'{where}: homepage must be https')
         kind = c.get('kind')
-        if kind != 'pip':
+        if kind not in ('pip', 'files'):
             dest = c.get('dest')
             if not _rel_path_ok(dest):
                 errors.append(f'{where}: dest must be a relative posix path')
@@ -214,6 +218,24 @@ def validate(data: dict) -> list[str]:
                 for name, member in files.items():
                     if not SONAME_RE.fullmatch(name) or not _rel_path_ok(member):
                         errors.append(f'{where}/{key}: bad file {name} <- {member}')
+        if kind == 'files':
+            assets = c.get('assets')
+            if not isinstance(assets, dict) or not assets:
+                errors.append(f'{where}: assets missing')
+                continue
+            for key, spec in assets.items():
+                if key not in PLATFORMS:
+                    errors.append(f'{where}: unknown platform {key}')
+                errors += _check_download(where, key, spec)
+                files = spec.get('files')
+                if not isinstance(files, dict) or not files:
+                    errors.append(f'{where}/{key}: files missing')
+                    continue
+                for target, member in files.items():
+                    if not _rel_path_ok(target) or not _rel_path_ok(member):
+                        errors.append(f'{where}/{key}: bad file {target} <- {member}')
+                    elif not any(target.startswith(d + '/') for d in dests):
+                        errors.append(f'{where}/{key}: {target} is not inside an earlier component')
         if kind == 'archive':
             assets = c.get('assets')
             if not isinstance(assets, dict) or not assets:

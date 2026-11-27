@@ -54,7 +54,7 @@ def release_record(mf: manifest.Manifest, tag: str, commit: str, archives: dict[
         entry = {'version': c.version, 'license': c.license}
         if c.kind == 'git':
             entry['commit'] = c.raw['commit']
-        elif c.kind == 'deb':
+        elif c.kind in ('deb', 'files'):
             entry['platforms'] = sorted(c.raw['assets'])
         components[c.name] = entry
     record = {

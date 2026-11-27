@@ -1,4 +1,4 @@
-"""Installers for the component kinds: archive, git, pip and deb."""
+"""Installers for the component kinds: archive, git, pip, deb and files."""
 
 from __future__ import annotations
 
@@ -139,6 +139,28 @@ def install_deb(c: Component, manifest: Manifest, platform: Platform, bundle: Pa
             set_runpath(tool, out, '$ORIGIN')
 
 
+def install_files(c: Component, manifest: Manifest, platform: Platform, bundle: Path, cache: Path,
+                  offline: bool, mirror: Mirror | None = None) -> None:
+    """Copy the listed members of a package into earlier components, e.g. runtime DLLs."""
+    asset = c.asset(platform)
+    package = fetch(asset.url, asset.sha256, cache / 'downloads', offline, mirror)
+    with tempfile.TemporaryDirectory(dir=bundle.parent, prefix='.unpack-') as tmp:
+        tree = Path(tmp) / 'tree'
+        extract(package, tree)
+        copy_licenses(tree, c.license_files, bundle / 'licenses' / c.name)
+        for target, member in asset.files:
+            source = tree / member
+            if source.is_symlink() or not source.is_file():
+                raise InstallError(f'{c.name}: {member} is not a regular file in {asset.filename}')
+            out = bundle / target
+            if not out.parent.is_dir():
+                raise InstallError(f'{c.name}: {out.parent} does not exist')
+            if out.exists():
+                raise InstallError(f'{c.name}: {out} already exists')
+            shutil.copyfile(source, out)
+            out.chmod(0o644)
+
+
 def _git(args: list[str], cwd: Path) -> str:
     argv = ['git', '-c', 'core.autocrlf=false', '-c', 'core.eol=lf', '-c', 'advice.detachedHead=false', *args]
     return subprocess.run(argv, cwd=cwd, check=True, timeout=900, capture_output=True, text=True).stdout.strip()
@@ -276,6 +298,8 @@ def install(c: Component, manifest: Manifest, platform: Platform, bundle: Path, 
         install_archive(c, manifest, platform, bundle, cache, offline, mirror)
     elif c.kind == 'deb':
         install_deb(c, manifest, platform, bundle, cache, offline, mirror)
+    elif c.kind == 'files':
+        install_files(c, manifest, platform, bundle, cache, offline, mirror)
     elif c.kind == 'git':
         install_git(c, bundle, cache, offline)
     elif c.kind == 'pip':

@@ -123,7 +123,7 @@ def main(argv: list[str] | None = None) -> int:
     for key, spec in data.get('patchelf', {}).get('assets', {}).items():
         check(f'patchelf/{key}', spec)
     for c in data['components']:
-        if c['kind'] in ('archive', 'deb'):
+        if c['kind'] in ('archive', 'deb', 'files'):
             for key, spec in c['assets'].items():
                 if 'same_as' not in spec:
                     check(f'{c["name"]}/{key}', spec)

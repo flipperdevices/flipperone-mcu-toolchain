@@ -643,6 +643,66 @@
           "sha256": "52b1e39822f408a05a3a47557594698ba69e59777c204f9c481836c5955431ff"
         }
       }
+    },
+    {
+      "name": "msvc-runtime-x64",
+      "kind": "files",
+      "version": "14.51.36231",
+      "license": "LicenseRef-Microsoft-Visual-Cpp-Redistributable",
+      "homepage": "https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist",
+      "license_files": [
+        "msvc_runtime-14.51.36231.dist-info/licenses/LICENSE"
+      ],
+      "assets": {
+        "windows-x64": {
+          "url": "https://files.pythonhosted.org/packages/98/33/be9ef68901200813fc174a06758b4ae48ca4eb58fa783280dd879d5fd048/msvc_runtime-14.51.36231-cp312-cp312-win_amd64.whl",
+          "sha256": "89f70d1a37bb64164cdb09d02dd82d6b1400e1310be2995b4ed5a9f23efe2222",
+          "files": {
+            "tools/clang-format/bin/msvcp140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/msvcp140.dll",
+            "tools/clang-format/bin/vcruntime140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140.dll",
+            "tools/clang-format/bin/vcruntime140_1.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140_1.dll",
+            "tools/clang-tidy/bin/msvcp140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/msvcp140.dll",
+            "tools/clang-tidy/bin/vcruntime140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140.dll",
+            "tools/clang-tidy/bin/vcruntime140_1.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140_1.dll",
+            "tools/clangd/bin/msvcp140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/msvcp140.dll",
+            "tools/clangd/bin/vcruntime140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140.dll",
+            "tools/clangd/bin/vcruntime140_1.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140_1.dll"
+          }
+        },
+        "windows-arm64": {
+          "url": "https://files.pythonhosted.org/packages/98/33/be9ef68901200813fc174a06758b4ae48ca4eb58fa783280dd879d5fd048/msvc_runtime-14.51.36231-cp312-cp312-win_amd64.whl",
+          "sha256": "89f70d1a37bb64164cdb09d02dd82d6b1400e1310be2995b4ed5a9f23efe2222",
+          "files": {
+            "tools/clang-tidy/bin/msvcp140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/msvcp140.dll",
+            "tools/clang-tidy/bin/vcruntime140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140.dll",
+            "tools/clang-tidy/bin/vcruntime140_1.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140_1.dll"
+          }
+        }
+      }
+    },
+    {
+      "name": "msvc-runtime-arm64",
+      "kind": "files",
+      "version": "14.51.36231",
+      "license": "LicenseRef-Microsoft-Visual-Cpp-Redistributable",
+      "homepage": "https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist",
+      "license_files": [
+        "msvc_runtime-14.51.36231.dist-info/licenses/LICENSE"
+      ],
+      "assets": {
+        "windows-arm64": {
+          "url": "https://files.pythonhosted.org/packages/c3/45/040bef8f1c3e0e8ec10f7a3fae802bc9f14892201e579734ae04b8f85155/msvc_runtime-14.51.36231-cp312-cp312-win_arm64.whl",
+          "sha256": "348e6adaa9a9e3b41fcd6e7bf2990da266d8f5bc6a1aaed9dab201c2c0f2d748",
+          "files": {
+            "tools/clang-format/bin/msvcp140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/msvcp140.dll",
+            "tools/clang-format/bin/vcruntime140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140.dll",
+            "tools/clang-format/bin/vcruntime140_1.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140_1.dll",
+            "tools/clangd/bin/msvcp140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/msvcp140.dll",
+            "tools/clangd/bin/vcruntime140.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140.dll",
+            "tools/clangd/bin/vcruntime140_1.dll": "msvc_runtime-14.51.36231.data/data/Scripts/vcruntime140_1.dll"
+          }
+        }
+      }
     }
   ]
 }

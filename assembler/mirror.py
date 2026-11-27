@@ -8,7 +8,7 @@ upload. Assets already present are skipped, and none are ever deleted, since old
 toolchain tags may still need them. Uploads go through the `gh` CLI (GH_TOKEN needs
 contents: write); the release is created as a prerelease on first use.
 
-Archive and deb components and the patchelf wheels are mirrored: the Pico SDK comes from
+Archive, deb and files components and the patchelf wheels are mirrored: the Pico SDK comes from
 git at pinned commits, and the Python packages from PyPI, which does not allow a release
 file to be replaced.
 """
@@ -30,8 +30,8 @@ NOTES = ('Upstream archives pinned in manifest.json, kept in case upstream remov
 
 
 def wanted(mf: manifest.Manifest) -> dict[str, tuple[str, str]]:
-    """Mirror asset name -> (upstream URL, sha256), for every archive, deb and patchelf asset."""
-    assets = [a for c in mf.components if c.kind in ('archive', 'deb') for a in c.all_assets()]
+    """Mirror asset name -> (upstream URL, sha256), for every archive, deb, files and patchelf asset."""
+    assets = [a for c in mf.components if c.kind in ('archive', 'deb', 'files') for a in c.all_assets()]
     assets += [mf.patchelf_asset(host) for host in mf.patchelf.get('assets', {})]
     return {mirror_name(a.sha256, a.filename): (a.url, a.sha256) for a in assets}
 
