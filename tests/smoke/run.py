@@ -152,7 +152,7 @@ def check_signatures(root: Path, mf: manifest.Manifest, platform) -> None:
     lines = result.stdout.strip().splitlines()
     if len(lines) != len(targets):
         lines = [result.stderr.strip()[:200] or 'no output'] * len(targets)
-    for target, output in zip(targets, lines):
+    for target, output in zip(targets, lines, strict=True):
         status, _, subject = output.strip().partition('|')
         check(status == 'Valid' and 'O=Microsoft Corporation' in subject,
               f'{target}: signed by Microsoft (Authenticode: {output.strip()})')
