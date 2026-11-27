@@ -1,0 +1,4 @@
+# Hashed into every bundle's toolchain.json: the same bytes on every platform
+manifest.json text eol=lf
+python/*.lock text eol=lf
+python/*.in text eol=lf
