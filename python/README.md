@@ -44,8 +44,8 @@ Console scripts are dropped, so packages run as `python -m <module>`.
 4. **Check the import:** if the package's module is not its name with `-` as `_`
    (`pyserial` is `serial`), add it to `IMPORTS` in `check_packages.py`. Versions need no
    edit there: the script reads them from the lock.
-5. **Update the docs:** the package list in `README.md`, and the Python packages row in
-   `THIRD_PARTY.md`, with the licence of every new package in the lock.
+5. **Update the docs:** the Python packages row in `THIRD_PARTY.md`, with the licence of
+   every new package in the lock.
 6. **Test:** assemble and smoke-test locally (see CONTRIBUTING.md), then open a pull
    request. CI installs the lock on all five platforms, so a missing wheel fails there.
 
