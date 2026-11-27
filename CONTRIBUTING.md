@@ -1,7 +1,7 @@
 # Contributing
 
 Branch from `dev` and open a pull request against it. CI does the following:
-- assembles all four platforms on their native runners and smoke-tests each bundle
+- assembles all five platforms on their native runners and smoke-tests each bundle
 - smoke-tests both Linux bundles on the oldest supported glibc, without the system USB
   libraries the bundle ships
 - builds the Docker image for both architectures

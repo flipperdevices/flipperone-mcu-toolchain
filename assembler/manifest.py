@@ -64,7 +64,8 @@ class Component:
         spec = assets.get(platform.name, assets.get('any'))
         if spec is None:
             raise ManifestError(f'{self.name}: no asset for {platform.name}')
-        return self._asset(spec)
+        # {"same_as": "<platform>"}: deliberately the other platform's archive
+        return self._asset(assets[spec['same_as']] if 'same_as' in spec else spec)
 
     def _asset(self, spec: dict) -> Asset:
         return Asset(url=spec['url'], sha256=spec['sha256'], root=spec.get('root', self.raw.get('root')),
@@ -76,7 +77,7 @@ class Component:
 
     def all_assets(self) -> list[Asset]:
         """Every asset of an archive or deb component, one per platform key (or "any")."""
-        return [self._asset(spec) for spec in self.raw.get('assets', {}).values()]
+        return [self._asset(spec) for spec in self.raw.get('assets', {}).values() if 'same_as' not in spec]
 
     def exe(self, platform: Platform) -> str | None:
         """Main executable, relative to the bundle root."""
@@ -225,6 +226,12 @@ def validate(data: dict) -> list[str]:
             for key, spec in assets.items():
                 if key != 'any' and key not in PLATFORMS:
                     errors.append(f'{where}: unknown platform {key}')
+                if 'same_as' in spec:
+                    target = assets.get(spec['same_as'])
+                    if len(spec) != 1 or target is None or 'same_as' in target:
+                        errors.append(f'{where}/{key}: same_as must be the only field and name '
+                                      'another platform\'s asset')
+                    continue
                 errors += _check_download(where, key, spec)
                 exclude = spec.get('exclude', [])
                 if not isinstance(exclude, list) or not all(isinstance(e, str) and e for e in exclude):

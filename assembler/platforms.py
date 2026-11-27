@@ -29,6 +29,7 @@ PLATFORMS = {
         Platform('linux-aarch64', 'linux', 'tar.gz'),
         Platform('darwin-arm64', 'darwin', 'tar.gz'),
         Platform('windows-x64', 'windows', 'zip'),
+        Platform('windows-arm64', 'windows', 'zip'),
     )
 }
 
@@ -47,5 +48,7 @@ def host_platform() -> str | None:
     if sys.platform == 'darwin':
         return 'darwin-arm64' if machine == 'arm64' else None
     if sys.platform == 'win32':
-        return 'windows-x64' if machine in ('amd64', 'x86_64') else None
+        # An x64 Python on Windows on Arm reports AMD64: run an arm64 one to assemble for arm64
+        return {'amd64': 'windows-x64', 'x86_64': 'windows-x64',
+                'arm64': 'windows-arm64', 'aarch64': 'windows-arm64'}.get(machine)
     return None

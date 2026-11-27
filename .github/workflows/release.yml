@@ -1,7 +1,7 @@
 name: Release
 
 # Push a tag v<N> on a commit of dev. Everything is rebuilt from the tag; the release gets
-# the four archives, SHA256SUMS and release.json, and the image goes to ghcr.
+# the five archives, SHA256SUMS and release.json, and the image goes to ghcr.
 
 on:
   push:

@@ -10,6 +10,7 @@ Docker image.
 | Linux aarch64 | `flipperone-mcu-toolchain-<tag>-linux-aarch64.tar.gz` |
 | macOS arm64 | `flipperone-mcu-toolchain-<tag>-darwin-arm64.tar.gz` |
 | Windows x64 | `flipperone-mcu-toolchain-<tag>-windows-x64.zip` |
+| Windows on Arm | `flipperone-mcu-toolchain-<tag>-windows-arm64.zip` |
 
 The bundle contains:
 - Arm GCC 14.2.1 (xPack), with GDB (built without Python scripting)
@@ -82,6 +83,10 @@ chooses its own toolchain file.
 - **Windows:** keep the bundle path short, for example under `%LOCALAPPDATA%`.
   - Loading BOOTSEL devices with picotool needs the WinUSB driver (use Zadig).
   - OpenOCD over CMSIS-DAP needs no driver.
+  - **Windows on Arm:** OpenOCD, CMake, uv, ccache, clangd and clang-format are native arm64.
+    Arm GCC, picotool, pioasm, Ninja, clang-tidy and Python with its packages are the x64
+    builds, which Windows runs by emulation: upstream ships no arm64 build of them, or of
+    some of the Python packages.
   - If PowerShell blocks scripts, run
     `powershell -ExecutionPolicy Bypass -NoExit -File <bundle>\fbtenv.ps1`.
 
@@ -97,7 +102,7 @@ add `options: --user root` so that the job can write to the workspace the runner
 A release is tagged `v<N>`, with N counting up; component versions are in the release,
 not in the tag. Each GitHub release has:
 
-- the four archives
+- the five archives
 - `SHA256SUMS`, covering the archives
 - `release.json`: the machine-readable description, for tools that pin or update a
   toolchain. It has `tag`, `source_commit`, `archives` (per platform: `name`, `sha256`,

@@ -4,7 +4,8 @@
     "linux-x86_64",
     "linux-aarch64",
     "darwin-arm64",
-    "windows-x64"
+    "windows-x64",
+    "windows-arm64"
   ],
   "patchelf": {
     "version": "0.19.3.0",
@@ -59,6 +60,9 @@
         "windows-x64": {
           "url": "https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v14.2.1-1.1/xpack-arm-none-eabi-gcc-14.2.1-1.1-win32-x64.zip",
           "sha256": "0b2d496b383ba578182eb57b3f7d35ff510e36eda56257883b902fa07c3bba55"
+        },
+        "windows-arm64": {
+          "same_as": "windows-x64"
         }
       }
     },
@@ -195,6 +199,9 @@
         "windows-x64": {
           "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/picotool-2.3.1-x64-win.zip",
           "sha256": "68730be0813f8f35be2cca147cf7f1572662d5dcf0f5ba468e02a6dd9e85db2b"
+        },
+        "windows-arm64": {
+          "same_as": "windows-x64"
         }
       },
       "runpath": "$ORIGIN/../lib"
@@ -233,6 +240,9 @@
         "windows-x64": {
           "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/pico-sdk-tools-2.3.1-x64-win.zip",
           "sha256": "c5d18dae371eb088da61a038ccf56a23fbd19171a319461efebeae1646c06ade"
+        },
+        "windows-arm64": {
+          "same_as": "windows-x64"
         }
       }
     },
@@ -274,6 +284,10 @@
         "windows-x64": {
           "url": "https://github.com/flipperdevices/openocd/releases/download/flipper-v1/openocd-flipper-v1-windows-x64.zip",
           "sha256": "55b0c7b0c8d4d93813423dba4ef7c2b2c9e465fa0599eac6faeeeef1ba3eb862"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/flipperdevices/openocd/releases/download/flipper-v1/openocd-flipper-v1-windows-arm64.zip",
+          "sha256": "15d1ca859afb3ce0ce60baebe24a606dc147ee2d7b03811db09d46055bd48fea"
         }
       }
     },
@@ -310,6 +324,10 @@
         "windows-x64": {
           "url": "https://github.com/xpack-dev-tools/cmake-xpack/releases/download/v3.31.9-1/xpack-cmake-3.31.9-1-win32-x64.zip",
           "sha256": "fbb9233a1a16347ca58ae874d2c148a5744b9358607fe16abb665637a05567e3"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9-windows-arm64.zip",
+          "sha256": "45b319a85083cedb4e9e0ecc38c2747cdfde19954e645fd2137370e03c4b333a"
         }
       }
     },
@@ -346,6 +364,9 @@
         "windows-x64": {
           "url": "https://github.com/xpack-dev-tools/ninja-build-xpack/releases/download/v1.13.1-1/xpack-ninja-build-1.13.1-1-win32-x64.zip",
           "sha256": "e14c3879dc5d6d4d69e89da5e8c9f3e7ca2c37194283631e56f6b3d90cad7af4"
+        },
+        "windows-arm64": {
+          "same_as": "windows-x64"
         }
       }
     },
@@ -390,6 +411,9 @@
         "windows-x64": {
           "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.12.16%2B20261026-x86_64-pc-windows-msvc-install_only.tar.gz",
           "sha256": "590dfcbe3a34c07301e6332e13e2188b98655cd072b08afa45a7998dc4c22bc5"
+        },
+        "windows-arm64": {
+          "same_as": "windows-x64"
         }
       }
     },
@@ -439,6 +463,10 @@
         "windows-x64": {
           "url": "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-x86_64-pc-windows-msvc.zip",
           "sha256": "0cdc5b38fe5a8168ed6a25814f5ba43c21d313dd3187314fccb37b7cec46e021"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.7/uv-aarch64-pc-windows-msvc.zip",
+          "sha256": "505d9e65e7692bac3ddf98c66754aa26c5050c409c184af30a881a0a72cc85e3"
         }
       }
     },
@@ -478,6 +506,10 @@
         "windows-x64": {
           "url": "https://github.com/ccache/ccache/releases/download/v4.14.3/ccache-4.14.3-windows-x86_64.zip",
           "sha256": "c845c3d65be81954c75659145a522a793a27586bf940c5dcfe18af33fa1a67dd"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/ccache/ccache/releases/download/v4.14.3/ccache-4.14.3-windows-aarch64.zip",
+          "sha256": "4c12ee652936c83b7730ff16f93c86e9e905a91aed9549ce1304185f33c8b3e4"
         }
       }
     },
@@ -518,6 +550,10 @@
         "windows-x64": {
           "url": "https://files.pythonhosted.org/packages/90/cf/438675e6cea4a5754a763f73d7628ea1c7a30e48f83f691e88f847d70ad4/clang_format-22.1.1-py2.py3-none-win_amd64.whl",
           "sha256": "8109b43a3c352b5c8eadf73cd2b7fb7868d28db22aaf1ad3de6933d23a20eae7"
+        },
+        "windows-arm64": {
+          "url": "https://files.pythonhosted.org/packages/d2/f7/390d5f814e7aa0ece24b567850df63658f3cb20385a960fe78e896683092/clang_format-22.1.1-py2.py3-none-win_arm64.whl",
+          "sha256": "e184243ba06ed46619c838a8e1d6ec3579156785505f0c87e9d3019bcb53c354"
         }
       }
     },
@@ -558,6 +594,9 @@
         "windows-x64": {
           "url": "https://files.pythonhosted.org/packages/f6/5b/b5e5a286ff06111158f769892c56bf811806bd4d4d5aba93960b9c835e31/clang_tidy-22.1.0.1-py2.py3-none-win_amd64.whl",
           "sha256": "e9f1e762afe3f5f3511ca7f50132d4d6d5c58a3f6760089ed45d2b3506cf7d07"
+        },
+        "windows-arm64": {
+          "same_as": "windows-x64"
         }
       }
     },
@@ -598,6 +637,10 @@
         "windows-x64": {
           "url": "https://files.pythonhosted.org/packages/6e/1a/2a3ad71897b255238022305168e472c2187850dd61163efc1620cbd936e4/clangd-22.1.1-py2.py3-none-win_amd64.whl",
           "sha256": "88f3a1b28cba6a714e97cf74ae749eb2f965bfd24e69fa17e8f0b6dba67cfee6"
+        },
+        "windows-arm64": {
+          "url": "https://files.pythonhosted.org/packages/38/14/1eb548ec58cddbb406c29c5a5b445d1e90131077c5ba99baa15c5a6b0765/clangd-22.1.1-py2.py3-none-win_arm64.whl",
+          "sha256": "52b1e39822f408a05a3a47557594698ba69e59777c204f9c481836c5955431ff"
         }
       }
     }

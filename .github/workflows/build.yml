@@ -54,6 +54,8 @@ jobs:
           - { platform: linux-aarch64, runner: ubuntu-24.04-arm }
           - { platform: darwin-arm64, runner: macos-15 }
           - { platform: windows-x64, runner: windows-2022 }
+          # An arm64 Python, so the assembler detects windows-arm64
+          - { platform: windows-arm64, runner: windows-11-arm, python-arch: arm64 }
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
     defaults:
@@ -64,6 +66,7 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
+          architecture: ${{ matrix.python-arch }}
       - name: Assemble
         env:
           GITHUB_TOKEN: ${{ github.token }}  # reads the mirror release, if upstream fails

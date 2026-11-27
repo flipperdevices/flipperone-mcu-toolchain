@@ -6,6 +6,7 @@ and the libraries in `tools/lib` get a RUNPATH (patchelf) that points them at
 download URLs and sha256 hashes for each platform are in the bundle's `toolchain.json`.
 License texts that ship inside an upstream archive stay in the bundle:
 - **xPack tools (GCC, CMake, Ninja):** under `tools/<component>/distro-info/licenses/`.
+  The windows-arm64 bundle has Kitware's CMake instead: under `tools/cmake/doc/cmake/`.
 - **Python:** in the interpreter tree. Each installed package keeps its licence in its
   `*.dist-info` directory.
 - **Everything else:** copied to `licenses/<component>/`.
@@ -20,7 +21,7 @@ License texts that ship inside an upstream archive stay in the bundle:
 | libusb (Linux bundles, Debian package `libusb-1.0-0`) | 1.0.26-1 | LGPL-2.1-or-later | <https://snapshot.debian.org/package/libusb-1.0/2:1.0.26-1/> |
 | libftdi1 (Linux bundles, Debian package `libftdi1-2`) | 1.5-6 | LGPL-2.1-only | <https://snapshot.debian.org/package/libftdi1/1.5-6/> |
 | hidapi (Linux bundles, Debian package `libhidapi-hidraw0`) | 0.13.1-1 | GPL-3.0-only OR BSD-3-Clause OR HIDAPI license; redistributed under BSD-3-Clause | <https://snapshot.debian.org/package/hidapi/0.13.1-1/> |
-| xPack CMake | 3.31.9-1 | BSD-3-Clause | <https://github.com/xpack-dev-tools/cmake-xpack/releases/tag/v3.31.9-1> |
+| xPack CMake (Kitware's build on windows-arm64) | 3.31.9-1 (3.31.9) | BSD-3-Clause | <https://github.com/xpack-dev-tools/cmake-xpack/releases/tag/v3.31.9-1>, <https://github.com/Kitware/CMake/releases/tag/v3.31.9> |
 | xPack Ninja | 1.13.1-1 | Apache-2.0 | <https://github.com/xpack-dev-tools/ninja-build-xpack/releases/tag/v1.13.1-1> |
 | CPython (python-build-standalone) | 3.12.16 (20261026) | PSF-2.0 and the licenses of its bundled libraries | <https://github.com/astral-sh/python-build-standalone/releases/tag/20261026> |
 | Python packages: the ones in `python/requirements-build.in` and their dependencies | see `python/requirements.lock` | MIT (ansi, black, cffi, charset-normalizer, mypy-extensions, oslex, platformdirs, pytokens, scons, setuptools, urllib3), BSD-3-Clause (click, idna, protobuf, pycparser, pyserial), BSD-2-Clause (crc), Apache-2.0 (dataclass-wizard, grpcio, grpcio-tools, mslex, requests), Apache-2.0 OR BSD-2-Clause (packaging), Apache-2.0 OR BSD-3-Clause (cryptography; its wheels include OpenSSL, Apache-2.0), MPL-2.0 (certifi, pathspec), HPND (pillow), PSF-2.0 (typing-extensions) | PyPI; each package's licence ships in its `*.dist-info` directory in the bundled interpreter |

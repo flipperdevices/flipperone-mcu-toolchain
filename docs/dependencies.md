@@ -61,7 +61,7 @@ Use only upstream releases that are at least two weeks old.
 | Key | Meaning |
 | --- | --- |
 | `schema` | `1` |
-| `platforms` | Bundles to build, from `linux-x86_64`, `linux-aarch64`, `darwin-arm64` and `windows-x64` |
+| `platforms` | Bundles to build, from `linux-x86_64`, `linux-aarch64`, `darwin-arm64`, `windows-x64` and `windows-arm64` |
 | `patchelf` | `version`, `license`, `homepage`, and `assets`: one `{url, sha256}` wheel per host platform the assembler runs on. Sets `runpath`s. |
 | `components` | Installed in this order |
 
@@ -82,7 +82,7 @@ Use only upstream releases that are at least two weeks old.
 
 | Kind | Keys |
 | --- | --- |
-| `archive` | `assets`: per platform (or `any`), `{url, sha256}`, plus optional `root` and `exclude` (fnmatch patterns to skip). `root` selects what gets installed: unset installs the single top-level directory, or the whole archive if there isn't exactly one; `""` installs the archive root; a path installs that directory. Optional: `root` at component level as the default, `restamp_pyc` (Python trees), and `runpath` (Linux only: RUNPATH set on `exe`, starting with `$ORIGIN`). |
+| `archive` | `assets`: per platform (or `any`), `{url, sha256}`, plus optional `root` and `exclude` (fnmatch patterns to skip), or `{"same_as": "<platform>"}` to install that platform's archive (x64 tools on windows-arm64). `root` selects what gets installed: unset installs the single top-level directory, or the whole archive if there isn't exactly one; `""` installs the archive root; a path installs that directory. Optional: `root` at component level as the default, `restamp_pyc` (Python trees), and `runpath` (Linux only: RUNPATH set on `exe`, starting with `$ORIGIN`). |
 | `git` | `url`, `ref` (the tag), `commit` (full sha1). Optional: `submodules`, `{path: commit}`, which checks out only these; `keep`, `{submodule path: [files]}`, which keeps only those files. |
 | `pip` | `interpreter`: the name of an earlier component. `requirements`: the lock file. |
 | `deb` | `assets`: per Linux platform, `{url, sha256, files}`, where `files` maps an installed soname to its path in the package (`usr/lib/<triplet>/lib….so.N.M`). Installed only on the listed platforms. Each file gets RUNPATH `$ORIGIN`. |

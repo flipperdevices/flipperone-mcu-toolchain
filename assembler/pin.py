@@ -125,7 +125,8 @@ def main(argv: list[str] | None = None) -> int:
     for c in data['components']:
         if c['kind'] in ('archive', 'deb'):
             for key, spec in c['assets'].items():
-                check(f'{c["name"]}/{key}', spec)
+                if 'same_as' not in spec:
+                    check(f'{c["name"]}/{key}', spec)
         elif c['kind'] == 'git':
             commit = git_tag_commit(c['url'], c['ref'])
             if not c.get('commit') and args.write:

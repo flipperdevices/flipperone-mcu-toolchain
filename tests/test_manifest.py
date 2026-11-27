@@ -40,7 +40,8 @@ def test_every_archive_component_covers_every_platform():
 
 
 def test_no_url_is_used_twice(data):
-    urls = [spec['url'] for c in data['components'] if c['kind'] == 'archive' for spec in c['assets'].values()]
+    urls = [spec['url'] for c in data['components'] if c['kind'] == 'archive' for spec in c['assets'].values()
+            if 'same_as' not in spec]
     assert len(urls) == len(set(urls))
 
 
@@ -79,6 +80,9 @@ def test_every_tool_has_a_version_check(data):
     (lambda d: d['patchelf']['assets']['linux-x86_64'].update(sha256='x'), 'patchelf/linux-x86_64: sha256'),
     (lambda d: tool(d, 'python-packages')['check'].update(script='python/nope.py'), 'check script missing'),
     (lambda d: tool(d, 'cmake')['check'].update(expect=''), 'check needs a non-empty expect'),
+    (lambda d: tool(d, 'ninja')['assets'].update({'windows-arm64': {'same_as': 'beos-m68k'}}), 'same_as'),
+    (lambda d: tool(d, 'ninja')['assets']['windows-arm64'].update(url='https://x/y'), 'same_as'),
+    (lambda d: tool(d, 'ninja')['assets'].update({'windows-x64': {'same_as': 'windows-arm64'}}), 'same_as'),
 ])
 def test_validate_rejects(data, mutate, message):
     broken = copy.deepcopy(data)
