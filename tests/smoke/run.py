@@ -167,13 +167,24 @@ def build_blink(root: Path, work: Path, use_env: bool) -> str:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def short_path(path: Path) -> str:
+    """The Windows 8.3 form of an existing path; the path itself elsewhere or without 8.3 names."""
+    if sys.platform != 'win32':
+        return str(path)
+    import ctypes
+    buf = ctypes.create_unicode_buffer(32768)
+    n = ctypes.windll.kernel32.GetShortPathNameW(str(path), buf, len(buf))
+    return buf.value if 0 < n < len(buf) else str(path)
+
+
 def check_clangd(root: Path, build: Path) -> None:
     """clangd reads the build's compile commands and the Arm GCC's system headers."""
     gcc = root / 'tools' / 'arm-none-eabi-gcc' / 'bin'
-    # Any name in that directory: with a space in its path, CMake on Windows records the
-    # compiler by its 8.3 short name (ARxxxx~1.EXE), which 'arm-none-eabi-*' misses
+    # With a space in the path, CMake on Windows records the compiler by its 8.3 name, and
+    # clangd matches the glob against the fully shortened path (ARM-NO~1\bin\AR19DD~1.EXE)
+    globs = {f'{gcc.as_posix()}/*', f'{short_path(gcc).replace(chr(92), "/")}/*'}
     output = run(['clangd', f'--check={BLINK / "blink.c"}', f'--compile-commands-dir={build}',
-                  f'--query-driver={gcc.as_posix()}/*'])
+                  f'--query-driver={",".join(sorted(globs))}'])
     check('All checks completed, 0 errors' in output, 'clangd parses blink.c without errors')
 
 
