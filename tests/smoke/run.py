@@ -137,21 +137,25 @@ def check_libraries(root: Path, mf: manifest.Manifest, platform) -> None:
 def check_signatures(root: Path, mf: manifest.Manifest, platform) -> None:
     """DLLs that files components bring in carry a valid Microsoft Authenticode signature."""
     print('[signatures]')
-    for c in mf.components:
-        if c.kind != 'files' or not c.applies_to(platform):
-            continue
-        for target, _ in c.asset(platform).files:
-            path = root / target
-            script = ("$s = Get-AuthenticodeSignature -LiteralPath $env:FO_SIGNED; "
-                      "\"$($s.Status)|$($s.SignerCertificate.Subject)\"")
-            # Windows PowerShell cannot load its own modules with PowerShell 7's PSModulePath
-            env = {k: v for k, v in os.environ.items() if k.upper() != 'PSMODULEPATH'}
-            result = subprocess.run(['powershell', '-NoProfile', '-Command', script], capture_output=True,
-                                    text=True, env={**env, 'FO_SIGNED': str(path)})
-            output = result.stdout.strip()
-            status, _, subject = output.partition('|')
-            check(status == 'Valid' and 'O=Microsoft Corporation' in subject,
-                  f'{target}: signed by Microsoft (Authenticode: {output or result.stderr.strip()[:200]})')
+    targets = [target for c in mf.components if c.kind == 'files' and c.applies_to(platform)
+               for target, _ in c.asset(platform).files]
+    if not targets:
+        return
+    # One process for all files: starting Windows PowerShell takes long on some runners
+    script = ("$env:FO_SIGNED -split \"`n\" | ForEach-Object { $s = Get-AuthenticodeSignature -LiteralPath $_; "
+              "\"$($s.Status)|$($s.SignerCertificate.Subject)\" }")
+    # Windows PowerShell cannot load its own modules with PowerShell 7's PSModulePath
+    env = {k: v for k, v in os.environ.items() if k.upper() != 'PSMODULEPATH'}
+    env['FO_SIGNED'] = '\n'.join(str(root / target) for target in targets)
+    result = subprocess.run(['powershell', '-NoProfile', '-Command', script], capture_output=True, text=True,
+                            env=env, timeout=600)
+    lines = result.stdout.strip().splitlines()
+    if len(lines) != len(targets):
+        lines = [result.stderr.strip()[:200] or 'no output'] * len(targets)
+    for target, output in zip(targets, lines):
+        status, _, subject = output.strip().partition('|')
+        check(status == 'Valid' and 'O=Microsoft Corporation' in subject,
+              f'{target}: signed by Microsoft (Authenticode: {output.strip()})')
 
 
 def cache_value(build: Path, name: str) -> str | None:
