@@ -147,7 +147,8 @@ def check_signatures(root: Path, mf: manifest.Manifest, platform) -> None:
             output = subprocess.run(['powershell', '-NoProfile', '-Command', script], capture_output=True,
                                     text=True, env={**os.environ, 'FO_SIGNED': str(path)}).stdout.strip()
             status, _, subject = output.partition('|')
-            check(status == 'Valid' and 'O=Microsoft Corporation' in subject, f'{target}: signed by Microsoft')
+            check(status == 'Valid' and 'O=Microsoft Corporation' in subject,
+                  f'{target}: signed by Microsoft (Authenticode: {output or "no output"})')
 
 
 def cache_value(build: Path, name: str) -> str | None:
