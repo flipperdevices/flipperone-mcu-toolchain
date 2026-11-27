@@ -109,12 +109,18 @@ def check_tools(root: Path, mf: manifest.Manifest, platform) -> None:
 
 
 def check_libraries(root: Path, mf: manifest.Manifest, platform) -> None:
-    """Every bundled library a tool needs resolves inside the bundle (ldd)."""
+    """Every library a tool needs resolves (ldd); with a runpath, the bundled ones from the bundle."""
     print('[libraries]')
     bundled = {name: root / c.dest / name for c in mf.components
                if c.kind == 'deb' and c.applies_to(platform) for name, _ in c.asset(platform).files}
     for c in mf.components:
+        if c.kind != 'archive' or not c.raw.get('exe') or not c.applies_to(platform):
+            continue
         if not c.raw.get('runpath'):
+            # Self-contained tools, e.g. OpenOCD with static USB libraries
+            result = subprocess.run(['ldd', str(root / c.exe(platform))], capture_output=True, text=True)
+            if 'not a dynamic executable' not in result.stdout + result.stderr:
+                check('not found' not in result.stdout, f'{c.name}: ldd finds every library')
             continue
         output = run(['ldd', root / c.exe(platform)])
         check('not found' not in output, f'{c.name}: ldd finds every library')

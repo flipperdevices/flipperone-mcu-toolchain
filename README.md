@@ -15,7 +15,7 @@ The bundle contains:
 - Arm GCC 14.2.1 (xPack), with GDB (built without Python scripting)
 - Pico SDK 2.3.1, with its TinyUSB submodule and without BTstack (see below)
 - picotool and pioasm 2.3.1, prebuilt
-- OpenOCD (the Raspberry Pi fork)
+- OpenOCD ([Flipper's build](https://github.com/flipperdevices/openocd): mainline plus FreeRTOS Cortex-M33 thread support), with its USB libraries linked in
 - CMake and Ninja
 - Python 3.12, with packages already installed: pillow, protobuf, grpcio-tools, cryptography, pyserial, black, ansi, certifi, crc, dataclass-wizard, requests, scons, urllib3 and oslex (see [python/README.md](python/README.md))
   (bundles protoc)
@@ -72,8 +72,8 @@ chooses its own toolchain file.
 ### Host requirements
 
 - **Linux:** glibc 2.34 or newer, for example Ubuntu 22.04 or Debian 12, and `libudev1`,
-  which every systemd-based distribution has. picotool and OpenOCD use the libusb,
-  libftdi1, hidapi (and on aarch64 libgpiod) in `tools/lib`, not the system's. To use a debug probe or a BOOTSEL
+  which every systemd-based distribution has. picotool uses the libusb, libftdi1 and hidapi
+  in `tools/lib`, not the system's; OpenOCD has them linked in. To use a debug probe or a BOOTSEL
   device without root, install udev rules for them once, e.g. picotool's
   [`60-picotool.rules`](https://github.com/raspberrypi/picotool/blob/master/udev/60-picotool.rules)
   and OpenOCD's `contrib/60-openocd.rules`, into `/etc/udev/rules.d/`.
@@ -122,7 +122,7 @@ cmake/initial-cache.cmake
 pico-sdk/
 tools/<component>/        arm-none-eabi-gcc, picotool, pioasm, openocd, cmake, ninja,
                           python, uv, ccache, clang-format, clang-tidy, clangd
-tools/lib/                Linux only: libusb, libftdi1, hidapi (and libgpiod) for picotool and OpenOCD
+tools/lib/                Linux only: libusb, libftdi1, hidapi for picotool
 licenses/  THIRD_PARTY.md
 ```
 

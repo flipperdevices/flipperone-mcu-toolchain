@@ -162,26 +162,6 @@
       }
     },
     {
-      "name": "libgpiod",
-      "kind": "deb",
-      "version": "1.6.3-1",
-      "license": "LGPL-2.1-or-later",
-      "homepage": "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git",
-      "dest": "tools/lib",
-      "license_files": [
-        "usr/share/doc/libgpiod2/copyright"
-      ],
-      "assets": {
-        "linux-aarch64": {
-          "url": "https://snapshot.debian.org/archive/debian/20210911T144836Z/pool/main/libg/libgpiod/libgpiod2_1.6.3-1_arm64.deb",
-          "sha256": "445b82c40fda3852251ef990a8df4add5d2238cb5a40c2f899571266d22f8b65",
-          "files": {
-            "libgpiod.so.2": "usr/lib/aarch64-linux-gnu/libgpiod.so.2.2.2"
-          }
-        }
-      }
-    },
-    {
       "name": "picotool",
       "kind": "archive",
       "version": "2.3.1",
@@ -259,11 +239,15 @@
     {
       "name": "openocd",
       "kind": "archive",
-      "version": "0.12.0+dev-gacff23f",
+      "version": "0.12.0+dev-flipper-v1",
       "license": "GPL-2.0-or-later",
-      "homepage": "https://github.com/raspberrypi/openocd",
+      "homepage": "https://github.com/flipperdevices/openocd",
+      "license_files": [
+        "openocd/licenses/*/COPYING*",
+        "openocd/licenses/*/LICENSE*"
+      ],
       "dest": "tools/openocd",
-      "root": "",
+      "root": "openocd",
       "path": [
         "."
       ],
@@ -272,30 +256,26 @@
         "args": [
           "--version"
         ],
-        "expect": "0.12.0+dev"
+        "expect": "0.12.0+dev-flipper-v1"
       },
       "assets": {
         "linux-x86_64": {
-          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-x86_64-lin.tar.gz",
-          "sha256": "7b2ad4bb310356c7e50c17d0a813f7f803765ea4a0610a2191909767835f3b0d"
+          "url": "https://github.com/flipperdevices/openocd/releases/download/flipper-v1/openocd-flipper-v1-linux-x86_64.tar.gz",
+          "sha256": "ab27623d45d7eb32d398e0ae7c744db7efabb3186bad244ddfe3ec9af5ec9961"
         },
         "linux-aarch64": {
-          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-aarch64-lin.tar.gz",
-          "sha256": "7b2d56d74ca27485bfc5a72fd59ac6684877a41e09abddcc18475cc9291adff5"
+          "url": "https://github.com/flipperdevices/openocd/releases/download/flipper-v1/openocd-flipper-v1-linux-aarch64.tar.gz",
+          "sha256": "916fe948d4f01a4f857d95917a1a40fd1fa5d3ddab5c32aaa787ea09d36756a7"
         },
         "darwin-arm64": {
-          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-mac.zip",
-          "sha256": "412caeab08a4613d3fd425fc1fa3fa84aa95ff05bca008f13eacee118e05035d"
+          "url": "https://github.com/flipperdevices/openocd/releases/download/flipper-v1/openocd-flipper-v1-darwin-arm64.tar.gz",
+          "sha256": "e2a480ffa1498fa6f591fb16ba52ad2c62d75c230c3e32647a75c23f29cd4d13"
         },
         "windows-x64": {
-          "url": "https://github.com/raspberrypi/pico-sdk-tools/releases/download/v2.3.1-0/openocd-0.12.0%2Bdev-x64-win.zip",
-          "sha256": "d13b7bbedaab72b7575f32c7f2f6120e14949f2dfb89366d4618fd8170f6a493",
-          "exclude": [
-            "scripts/target/?1879x?1?.cfg"
-          ]
+          "url": "https://github.com/flipperdevices/openocd/releases/download/flipper-v1/openocd-flipper-v1-windows-x64.zip",
+          "sha256": "55b0c7b0c8d4d93813423dba4ef7c2b2c9e465fa0599eac6faeeeef1ba3eb862"
         }
-      },
-      "runpath": "$ORIGIN/../lib"
+      }
     },
     {
       "name": "cmake",
